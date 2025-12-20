@@ -23,13 +23,7 @@ git clone git@github.com:mustafayildiz-m/iw_project.git
 cd iw_project
 ```
 
-2. **Environment değişkenlerini ayarlayın (opsiyonel):**
-```bash
-cp .env.example .env
-# .env dosyasını düzenleyerek gerekli değerleri değiştirin
-```
-
-3. **Docker ile projeyi başlatın:**
+2. **Docker ile projeyi başlatın:**
 ```bash
 docker-compose up -d --build
 ```

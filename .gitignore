@@ -12,14 +12,11 @@ build/
 .next/
 out/
 
-# Environment variables
-.env
+# Environment variables (keeping .env in git, but ignore local variants)
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-# But keep .env.example
-!.env.example
 
 # IDE
 .idea/
