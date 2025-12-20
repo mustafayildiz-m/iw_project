@@ -1,0 +1,122 @@
+/* Remove Bootstrap dropdown caret/arrow */
+.no-caret::after {
+  display: none !important;
+}
+
+.no-caret {
+  position: relative;
+}
+
+/* Language Switcher Toggle - Light Mode */
+.language-switcher-toggle,
+.btn.language-switcher-toggle {
+  border-radius: 50px !important;
+  padding: 0.45rem 0.9rem !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--bs-border-color, #e2e8f0) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+  transition: all 0.3s ease !important;
+  background: var(--bs-body-bg, #fff) !important;
+  color: var(--bs-body-color, #000) !important;
+}
+
+/* Language Switcher Toggle - Dark Mode */
+[data-bs-theme="dark"] .language-switcher-toggle,
+[data-bs-theme="dark"] .btn.language-switcher-toggle,
+[data-bs-theme="dark"] .btn-light.language-switcher-toggle {
+  background: #2d3748 !important;
+  color: #ffffff !important;
+  border-color: #4a5568 !important;
+}
+
+[data-bs-theme="dark"] .language-switcher-toggle span,
+[data-bs-theme="dark"] .btn.language-switcher-toggle span,
+[data-bs-theme="dark"] .dropdown-toggle.language-switcher-toggle span {
+  color: #ffffff !important;
+}
+
+/* Hover and focus states for dark mode */
+[data-bs-theme="dark"] .language-switcher-toggle:hover,
+[data-bs-theme="dark"] .btn.language-switcher-toggle:hover,
+[data-bs-theme="dark"] .language-switcher-toggle:focus {
+  background: #374151 !important;
+  color: #ffffff !important;
+  border-color: #667eea !important;
+}
+
+/* Active/pressed state for dark mode */
+[data-bs-theme="dark"] .language-switcher-toggle:active,
+[data-bs-theme="dark"] .btn.language-switcher-toggle:active,
+[data-bs-theme="dark"] .language-switcher-toggle.show {
+  background: #374151 !important;
+  color: #ffffff !important;
+}
+
+/* Language Switcher Menu */
+.language-switcher-menu {
+  border-radius: 12px;
+  border: 1px solid var(--bs-border-color, #e2e8f0);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 0.5rem;
+  min-width: 160px;
+  background: var(--bs-body-bg, #fff);
+}
+
+/* Language Switcher Menu - Dark Mode */
+[data-bs-theme="dark"] .language-switcher-menu {
+  background: var(--bs-dark, #1a1d29) !important;
+  border-color: var(--bs-border-color, #2d3748) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+}
+
+[data-bs-theme="dark"] .language-switcher-menu .language-switcher-item {
+  color: var(--bs-light, #fff) !important;
+}
+
+[data-bs-theme="dark"] .language-switcher-menu .language-switcher-item span {
+  color: var(--bs-light, #fff) !important;
+}
+
+/* Language Switcher Item */
+.language-switcher-item {
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.language-switcher-item.active {
+  font-weight: 600;
+  background: var(--bs-primary) !important;
+  color: white !important;
+}
+
+.language-switcher-item.active span {
+  color: white !important;
+}
+
+/* Dark Mode - Item hover */
+[data-bs-theme="dark"] .language-switcher-item:hover {
+  background: var(--bs-secondary-bg, #2d3748) !important;
+}
+
+[data-bs-theme="dark"] .language-switcher-item.active {
+  background: var(--bs-primary) !important;
+  color: white !important;
+}
+
+/* Dropdown menu animations */
+.dropdown-menu {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

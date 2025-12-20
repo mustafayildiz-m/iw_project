@@ -1,0 +1,460 @@
+/* Islamic Windows - Modern Auth Pages */
+
+.authWrapper {
+  min-height: 100vh;
+  height: 100vh;
+  position: fixed;
+  overflow: hidden;
+  margin: 0 !important;
+  width: 100vw !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+}
+
+/* Split Layout - LinkedIn Style */
+.splitLayout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Left Panel - Login Form */
+.leftPanel {
+  flex: 0 0 50%;
+  min-height: 100vh;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.leftContainer {
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+}
+
+/* Right Panel - Background Image */
+.rightPanel {
+  flex: 0 0 50%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backgroundImage {
+  width: 100%;
+  height: 100%;
+  background-image: url('/bg/login.png');
+  background-size: cover;
+  background-position: 92% center;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-30px) translateX(10px); }
+  66% { transform: translateY(20px) translateX(-10px); }
+}
+
+.logoContainer {
+  animation: fadeInDown 0.8s ease-out;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.logoImage {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background: white;
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logoImage:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.formContainer {
+  width: 100%;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.welcomeTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.welcomeSubtitle {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+.mainTitle {
+  animation: fadeInDown 1s ease-out;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  position: relative;
+  z-index: 20;
+  margin-bottom: 0.25rem !important;
+}
+
+.subtitle {
+  animation: fadeInDown 1.2s ease-out;
+  font-weight: 400;
+  margin-bottom: 0.5rem !important;
+  position: relative;
+  z-index: 20;
+}
+
+.decorativeLine {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: fadeIn 1.2s ease-out;
+  position: relative;
+  z-index: 20;
+}
+
+.crescentIcon {
+  font-size: 1.5rem;
+  animation: glow 2s ease-in-out infinite;
+  position: relative;
+  z-index: 20;
+}
+
+@keyframes glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.quoteContainer {
+  animation: fadeIn 1.4s ease-out;
+  font-style: italic;
+  margin-bottom: 0.75rem !important;
+  position: relative;
+  z-index: 20;
+}
+
+.authCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.6s ease-out;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 20;
+  margin-top: 1.5rem;
+}
+
+.authCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cardTitle {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.cardSubtitle {
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.cardLink {
+  color: #0a66c2;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.cardLink:hover {
+  color: #004182;
+  text-decoration: underline;
+}
+
+.cardLink::after {
+  display: none;
+}
+
+/* Form Input Styling - LinkedIn Style */
+.authCard input.form-control,
+.authCard textarea.form-control,
+.authCard select.form-control {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.6) !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease !important;
+  font-weight: 400 !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 1rem !important;
+}
+
+.authCard input.form-control:focus,
+.authCard textarea.form-control:focus,
+.authCard select.form-control:focus {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  box-shadow: 0 0 0 1px #000000 !important;
+  outline: none !important;
+}
+
+.authCard input.form-control::placeholder,
+.authCard textarea.form-control::placeholder,
+.authCard select.form-control::placeholder {
+  color: rgba(0, 0, 0, 0.6) !important;
+  font-weight: 400 !important;
+}
+
+/* Autofill override */
+.authCard input.form-control:-webkit-autofill,
+.authCard input.form-control:-webkit-autofill:hover,
+.authCard input.form-control:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Input password eye icon */
+.authCard .position-absolute svg {
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.authCard .position-absolute svg:hover {
+  color: #667eea;
+}
+
+/* Checkbox styling */
+.authCard .form-check-input {
+  background-color: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+  cursor: pointer;
+}
+
+.authCard .form-check-input:checked {
+  background-color: #667eea !important;
+  border-color: #667eea !important;
+}
+
+.authCard .form-check-label {
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Dropzone styling for profile photo */
+.authCard .profile-dropzone {
+  background-color: #f8fafc !important;
+  border: 2px dashed #cbd5e1 !important;
+  border-radius: 12px !important;
+  padding: 1rem !important;
+  transition: all 0.3s ease;
+  min-height: auto !important;
+}
+
+.authCard .profile-dropzone:hover {
+  border-color: #667eea !important;
+  background-color: #f1f5f9 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.authCard .dropzone .dz-message {
+  margin: 0 !important;
+  padding: 0.5rem !important;
+  text-align: center;
+}
+
+.authCard .dropzone .dz-message svg {
+  color: #667eea;
+  margin-bottom: 0.25rem;
+}
+
+.authCard .dropzone .dz-message p {
+  margin: 0 !important;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Profile preview adjustments */
+.authCard .profile-dropzone .text-center > div {
+  margin-bottom: 0.5rem;
+}
+
+/* Language Switcher on Auth Pages */
+.languageSwitcher {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 1rem;
+  z-index: 30;
+}
+
+.authWrapper button {
+  backdrop-filter: blur(10px);
+}
+
+/* Responsive Design */
+
+/* Tablet and below - Stack layout */
+@media (max-width: 992px) {
+  .splitLayout {
+    flex-direction: column;
+  }
+
+  .leftPanel {
+    flex: 1;
+    width: 100%;
+    padding: 1.5rem;
+    min-height: auto;
+  }
+
+  .rightPanel {
+    display: none; /* Hide background image on mobile/tablet */
+  }
+
+  .languageSwitcher {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1rem;
+  }
+
+  .leftContainer {
+    padding-top: 3rem;
+  }
+
+  .logoContainer {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .welcomeTitle {
+    font-size: 1.75rem;
+    text-align: center;
+  }
+
+  .welcomeSubtitle {
+    text-align: center;
+  }
+}
+
+/* Mobile Large */
+@media (max-width: 768px) {
+  .leftPanel {
+    padding: 1rem;
+  }
+
+  .logoContainer {
+    margin-bottom: 1rem;
+  }
+
+  .welcomeTitle {
+    font-size: 1.5rem;
+  }
+
+  .welcomeSubtitle {
+    font-size: 0.95rem;
+  }
+
+  .cardTitle {
+    font-size: 1.35rem;
+  }
+
+  .authCard {
+    border-radius: 12px;
+  }
+}
+
+/* Mobile Medium */
+@media (max-width: 576px) {
+  .leftPanel {
+    padding: 0.75rem;
+  }
+
+  .welcomeTitle {
+    font-size: 1.25rem;
+  }
+
+  .welcomeSubtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cardTitle {
+    font-size: 1.25rem;
+  }
+
+  .cardSubtitle {
+    font-size: 0.85rem;
+  }
+}
