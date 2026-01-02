@@ -25,9 +25,6 @@ const DebugSearchPage = () => {
 
   // Debug: Session ve context bilgilerini göster
   useEffect(() => {
-    console.log('🔍 DebugSearchPage - Session:', session);
-    console.log('🔍 DebugSearchPage - Session Status:', status);
-    console.log('🔍 DebugSearchPage - SearchContext values:', {
       searchResults,
       isSearching,
       showResults,
@@ -43,9 +40,7 @@ const DebugSearchPage = () => {
     setManualResults(null);
 
     try {
-      console.log('🔍 Manual search started for:', query);
       await performSearch(query, searchTypeInput);
-      console.log('🔍 Manual search completed');
     } catch (error) {
       console.error('❌ Manual search error:', error);
       setError('Arama sırasında bir hata oluştu');
@@ -62,7 +57,6 @@ const DebugSearchPage = () => {
     setManualResults(null);
 
     try {
-      console.log('🔍 Direct API call started');
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/search/users?q=${encodeURIComponent(query)}&limit=10`, {
         headers: {
@@ -71,16 +65,12 @@ const DebugSearchPage = () => {
         }
       });
 
-      console.log('🔍 Direct API response status:', response.status);
-      console.log('🔍 Direct API response headers:', response.headers);
 
       if (response.ok) {
         const data = await response.json();
-        console.log('🔍 Direct API data:', data);
         setManualResults(data);
       } else {
         const errorText = await response.text();
-        console.log('❌ Direct API error response:', errorText);
         setError(`API Hatası: ${response.status} - ${errorText}`);
       }
     } catch (error) {

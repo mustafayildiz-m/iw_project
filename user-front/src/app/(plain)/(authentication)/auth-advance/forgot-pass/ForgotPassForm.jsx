@@ -31,7 +31,6 @@ const ForgotPassForm = () => {
   
   const onSubmit = (data) => {
     // Burada e-posta gönderme işlemi yapılacak
-    console.log('E-posta gönderilecek:', data.email);
     setIsSubmitted(true);
   };
   

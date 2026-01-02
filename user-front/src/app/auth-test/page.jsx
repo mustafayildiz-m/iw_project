@@ -22,7 +22,6 @@ export default function AuthTest() {
     const userId = getUserIdFromToken();
     const user = getUserInfoFromToken();
     
-    console.log('Token check:', {
       hasToken: !!token,
       token: token?.substring(0, 50) + '...',
       userId,

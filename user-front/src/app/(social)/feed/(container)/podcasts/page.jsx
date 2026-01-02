@@ -44,7 +44,6 @@ const PodcastLanguageSelector = () => {
           }
         });
         
-        console.log('Podcast Counts:', counts);
       } catch (err) {
         console.error('Error fetching podcast counts:', err);
         languages.forEach(language => {

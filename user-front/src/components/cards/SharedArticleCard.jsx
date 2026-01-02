@@ -64,7 +64,6 @@ const SharedArticleCard = ({ post, onDeletePost }) => {
             return;
           }
         } catch (err) {
-          console.log('Token decode error:', err);
         }
 
         // Fallback to localStorage user data
@@ -77,7 +76,6 @@ const SharedArticleCard = ({ post, onDeletePost }) => {
               return;
             }
           } catch (parseErr) {
-            console.log('User data parse error:', parseErr);
           }
         }
 
@@ -94,7 +92,6 @@ const SharedArticleCard = ({ post, onDeletePost }) => {
             setCurrentUserId(userData.id);
           }
         } catch (apiErr) {
-          console.log('API user fetch error:', apiErr);
         }
       } catch (error) {
         console.error('Error getting current user ID:', error);

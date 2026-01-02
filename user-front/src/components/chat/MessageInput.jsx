@@ -294,7 +294,6 @@ const MessageInput = () => {
           <button
             type="button"
             className="btn btn-outline-secondary"
-            onClick={() => console.log('File upload clicked')}
             disabled={isSending}
             aria-label="Dosya ekle"
             title="Dosya ekle"

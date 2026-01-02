@@ -49,8 +49,6 @@ const ProfilePanel = ({ links }) => {
 
           if (response.ok) {
             const userData = await response.json();
-            console.log('📥 ProfilePanel: Profile data fetched:', userData);
-            console.log('📸 ProfilePanel: photoUrl from API:', userData.photoUrl);
             setUser(prev => ({
               ...prev,
               photoUrl: userData.photoUrl,
@@ -138,23 +136,19 @@ const ProfilePanel = ({ links }) => {
   }, [session?.user?.id]);
 
   const getImageUrl = (photoUrl, bustCache = false) => {
-    console.log('🖼️ ProfilePanel getImageUrl called with photoUrl:', photoUrl, 'bustCache:', bustCache);
     
     // If photoUrl is null, undefined, or empty, return default avatar
     if (!photoUrl || photoUrl === 'null' || photoUrl === 'undefined' || photoUrl === '') {
-      console.log('⚠️ ProfilePanel: No photoUrl, returning default avatar');
       return typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
     }
     
     // If photoUrl is an object (imported image), return it directly
     if (typeof photoUrl === 'object' && photoUrl.src) {
-      console.log('📦 ProfilePanel: photoUrl is an object, returning directly:', photoUrl);
       return photoUrl;
     }
     
     // If photoUrl is not a string, return default avatar
     if (typeof photoUrl !== 'string') {
-      console.log('⚠️ ProfilePanel: photoUrl is not a string, returning default avatar');
       return typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
     }
     
@@ -168,7 +162,6 @@ const ProfilePanel = ({ links }) => {
       const cleanApiBaseUrl = apiBaseUrl.replace(/\/$/, '');
       const url = `${cleanApiBaseUrl}${photoUrl}`;
       const finalUrl = bustCache ? `${url}?t=${Date.now()}` : url;
-      console.log('✅ ProfilePanel: Generated URL for /uploads/ path:', finalUrl);
       return finalUrl;
     }
     
@@ -178,7 +171,6 @@ const ProfilePanel = ({ links }) => {
       const cleanApiBaseUrl = apiBaseUrl.replace(/\/$/, '');
       const url = `${cleanApiBaseUrl}/${photoUrl}`;
       const finalUrl = bustCache ? `${url}?t=${Date.now()}` : url;
-      console.log('✅ ProfilePanel: Generated URL for uploads/ path:', finalUrl);
       return finalUrl;
     }
     
@@ -196,7 +188,6 @@ const ProfilePanel = ({ links }) => {
     const cleanApiBaseUrl = apiBaseUrl.replace(/\/$/, '');
     const url = photoUrl.startsWith('/') ? `${cleanApiBaseUrl}${photoUrl}` : `${cleanApiBaseUrl}/${photoUrl}`;
     const finalUrl = bustCache ? `${url}?t=${Date.now()}` : url;
-    console.log('✅ ProfilePanel: Generated URL for other path:', finalUrl);
     return finalUrl;
   };
 
@@ -348,7 +339,6 @@ const ProfilePanel = ({ links }) => {
                     objectFit: 'cover'
                   }}
                   onLoad={() => {
-                    console.log('✅ ProfilePanel: Image loaded successfully');
                     setImageLoading(false);
                   }}
                   onError={(e) => {

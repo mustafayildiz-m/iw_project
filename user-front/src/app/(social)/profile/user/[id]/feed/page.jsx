@@ -88,7 +88,6 @@ const UserFeedPage = () => {
         if (postsResponse.ok) {
           const postsData = await postsResponse.json();
           if (process.env.NODE_ENV === 'development') {
-            // console.log('User profile feed posts data (only this user\'s posts):', postsData);
           }
           setPosts(postsData);
         } else {
@@ -114,7 +113,6 @@ const UserFeedPage = () => {
             const decodedPayload = JSON.parse(atob(payload));
             const currentUserIdFromToken = decodedPayload.sub;
             setCurrentUserId(currentUserIdFromToken);
-            // console.log('Feed - Current user ID:', currentUserIdFromToken, 'Profile user ID:', userId);
             setIsCurrentUser(currentUserIdFromToken === userId || currentUserIdFromToken.toString() === userId);
           } catch (error) {
             // console.error('Error checking current user:', error);
@@ -196,7 +194,6 @@ const UserFeedPage = () => {
         // Refresh posts after unfollow
         fetchPosts();
         if (process.env.NODE_ENV === 'development') {
-          // console.log('Successfully unfollowed:', userIdToUnfollow);
         }
       } else {
         // console.error('Failed to unfollow user');
@@ -226,7 +223,6 @@ const UserFeedPage = () => {
         // Remove hidden post from local state
         setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
         if (process.env.NODE_ENV === 'development') {
-          // console.log('Successfully hid post:', postId);
         }
       } else {
         // console.error('Failed to hide post');
@@ -257,7 +253,6 @@ const UserFeedPage = () => {
         // Remove blocked user's posts from local state
         setPosts(prevPosts => prevPosts.filter(post => post.user_id !== userId && post.userId !== userId));
         if (process.env.NODE_ENV === 'development') {
-          // console.log('Successfully blocked user:', userId);
         }
       } else {
         // console.error('Failed to block user');
@@ -289,7 +284,6 @@ const UserFeedPage = () => {
 
       if (response.ok) {
         if (process.env.NODE_ENV === 'development') {
-          // console.log('Successfully reported post:', postId);
         }
         // Show success message to user
         alert('Gönderi başarıyla rapor edildi.');
@@ -321,7 +315,6 @@ const UserFeedPage = () => {
 
       if (response.ok) {
         if (process.env.NODE_ENV === 'development') {
-          // console.log('Successfully saved post:', postId);
         }
         // Show success message to user
         alert('Gönderi başarıyla kaydedildi.');
@@ -348,7 +341,6 @@ const UserFeedPage = () => {
     const { postId } = pendingAction;
     
     try {
-      // console.log('Deleting post:', postId);
       setDeletingPostId(postId);
       
       // Get the token from localStorage
@@ -369,7 +361,6 @@ const UserFeedPage = () => {
       });
 
       if (response.ok) {
-        // console.log('Post deleted successfully');
         // Close the modal first
         setShowDeleteConfirm(false);
         // Refresh posts to remove deleted post
@@ -393,7 +384,6 @@ const UserFeedPage = () => {
 
   const handleEditPost = async (postId) => {
     try {
-      // console.log('Editing post:', postId);
       const post = posts.find(p => p.id === postId);
       if (post) {
         setEditingPost(post);
@@ -406,7 +396,6 @@ const UserFeedPage = () => {
 
   const handleUpdatePost = async (updatedPost) => {
     try {
-      // console.log('Updating post:', updatedPost);
       // TODO: Implement update post API call
       setShowEditModal(false);
       setEditingPost(null);
@@ -419,7 +408,6 @@ const UserFeedPage = () => {
 
   const handleAddComment = async (postId, commentText) => {
     try {
-      // console.log('Adding comment to post:', postId, 'Comment:', commentText);
       
       // Get the token from localStorage
       let token = localStorage.getItem('token');
@@ -436,7 +424,6 @@ const UserFeedPage = () => {
         const payload = token.split('.')[1];
         const decodedPayload = JSON.parse(atob(payload));
         userId = decodedPayload.sub;
-        // console.log('Extracted user_id from token:', userId);
       } catch (error) {
         // console.error('Error extracting user_id from token:', error);
         alert('Kullanıcı bilgisi alınamadı. Lütfen tekrar giriş yapın.');
@@ -445,7 +432,6 @@ const UserFeedPage = () => {
 
       // Make the POST request to add comment
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/user-post-comments`;
-      // console.log('Making POST request to:', apiUrl);
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -460,14 +446,11 @@ const UserFeedPage = () => {
         })
       });
 
-      // console.log('Response status:', response.status);
 
       if (response.ok) {
-        // console.log('Comment added successfully');
         
         // Get the response data to get the new comment details
         const newComment = await response.json();
-        // console.log('New comment data:', newComment);
         
         // Update the comments state immediately without refetching
         setPostComments(prev => ({
@@ -488,7 +471,6 @@ const UserFeedPage = () => {
 
   const handleDeleteComment = async (commentId, postId) => {
     try {
-      // console.log('Deleting comment:', commentId, 'from post:', postId);
       
       // Get the token from localStorage
       let token = localStorage.getItem('token');
@@ -509,7 +491,6 @@ const UserFeedPage = () => {
       });
 
       if (response.ok) {
-        // console.log('Comment deleted successfully');
         
         // Update the comments state to remove the deleted comment
         setPostComments(prev => ({

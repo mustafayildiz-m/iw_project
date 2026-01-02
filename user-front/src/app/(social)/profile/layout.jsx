@@ -756,7 +756,6 @@ const ProfileLayout = ({
       const token = localStorage.getItem('token');
       const userId = getUserIdFromToken();
 
-      // console.log('Profile follow request details:', {
       //   profileType,
       //   profileId: params.id,
       //   userId,
@@ -774,7 +773,6 @@ const ProfileLayout = ({
           user_id: parseInt(userId),
           scholar_id: parseInt(params.id)
         };
-        // console.log('Making scholar follow request:', requestBody);
 
         response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user-scholar-follow/follow`, {
           method: 'POST',
@@ -789,7 +787,6 @@ const ProfileLayout = ({
           follower_id: parseInt(userId),
           following_id: parseInt(params.id)
         };
-        // console.log('Making user follow request:', requestBody);
 
         response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user-follow/follow`, {
           method: 'POST',
@@ -801,7 +798,6 @@ const ProfileLayout = ({
         });
       }
 
-      // console.log('Follow response:', {
       //   status: response.status,
       //   ok: response.ok
       // });
@@ -828,7 +824,6 @@ const ProfileLayout = ({
       const token = localStorage.getItem('token');
       const userId = getUserIdFromToken();
 
-      // console.log('Profile unfollow request details:', {
       //   profileType,
       //   profileId: params.id,
       //   userId,
@@ -846,7 +841,6 @@ const ProfileLayout = ({
           user_id: parseInt(userId),
           scholar_id: parseInt(params.id)
         };
-        // console.log('Making scholar unfollow request:', requestBody);
 
         response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user-scholar-follow/unfollow`, {
           method: 'DELETE',
@@ -861,7 +855,6 @@ const ProfileLayout = ({
           follower_id: parseInt(userId),
           following_id: parseInt(params.id)
         };
-        // console.log('Making user unfollow request:', requestBody);
 
         response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user-follow/unfollow`, {
           method: 'DELETE',
@@ -873,7 +866,6 @@ const ProfileLayout = ({
         });
       }
 
-      // console.log('Unfollow response:', {
       //   status: response.status,
       //   ok: response.ok
       // });
@@ -1108,7 +1100,6 @@ const ProfileLayout = ({
                           const decodedPayload = JSON.parse(atob(payload));
                           const currentUserId = decodedPayload.sub;
 
-                          // console.log('Layout - Current user ID:', currentUserId, 'Profile user ID:', params.id);
 
                           // If no params.id (general profile) or params.id matches current user
                           if (!params.id || params.id === currentUserId || params.id === currentUserId.toString()) {

@@ -140,65 +140,47 @@ const ScholarBooksPage = () => {
 
   // Handle download button click
   const handleDownloadClick = (book) => {
-    // console.log('Download clicked for book:', book);
-    // console.log('Book type:', book.type);
-    // console.log('Book pdfUrl:', book.pdfUrl);
     
     if (book.type === 'related' && book.languages && book.languages.length > 1) {
       // Show language selection modal for books with multiple languages
-      // console.log('Showing language modal for related book');
       setSelectedBook(book);
       setShowLanguageModal(true);
     } else if (book.type === 'own' && book.pdfUrl) {
       // Direct download for own books using pdfUrl
-      // console.log('Starting download for own book with pdfUrl:', book.pdfUrl);
       downloadBook(book, null);
     } else if (book.type === 'related' && book.languages && book.languages.length === 1) {
       // Direct download for books with single language
-      // console.log('Starting download for related book with single language');
       downloadBook(book, book.languages[0]);
     } else {
       // No download available
-      // console.log('No download available for book:', book);
       alert('Bu kitap için indirme seçeneği bulunmuyor.');
     }
   };
 
   // Download book function
   const downloadBook = (book, language) => {
-    // console.log('downloadBook called with:', { book, language });
     let downloadUrl = null;
     
     if (language && language.pdfUrl) {
       downloadUrl = getImageUrl(language.pdfUrl);
-      // console.log('Using language pdfUrl:', downloadUrl);
     } else if (book.type === 'own' && book.pdfUrl) {
       // For own books, use pdfUrl
       downloadUrl = getImageUrl(book.pdfUrl);
-      // console.log('Using own book pdfUrl:', downloadUrl);
-      // console.log('Original pdfUrl:', book.pdfUrl);
-      // console.log('getImageUrl result:', downloadUrl);
     } else if (book.coverUrl) {
       downloadUrl = getImageUrl(book.coverUrl);
-      // console.log('Using coverUrl as fallback:', downloadUrl);
     }
     
-    // console.log('Final downloadUrl:', downloadUrl);
     
     if (downloadUrl) {
-      // console.log('Starting fetch for downloadUrl:', downloadUrl);
       // Force download by creating a blob URL
       fetch(downloadUrl)
         .then(response => {
-          // console.log('Fetch response status:', response.status);
-          // console.log('Fetch response ok:', response.ok);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           return response.blob();
         })
         .then(blob => {
-          // console.log('Blob received, size:', blob.size, 'type:', blob.type);
           
           // Validate blob
           if (!blob || blob.size === 0) {
@@ -241,9 +223,7 @@ const ScholarBooksPage = () => {
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                // console.log('Download initiated successfully');
               } catch (error) {
-                // console.log('Blob download failed:', error);
                 // Try alternative download method without opening in new tab
                 const directLink = document.createElement('a');
                 directLink.href = downloadUrl;
@@ -253,7 +233,6 @@ const ScholarBooksPage = () => {
                 document.body.appendChild(directLink);
                 directLink.click();
                 document.body.removeChild(directLink);
-                // console.log('Direct download attempted as fallback');
               }
               
               // Clean up blob URL
@@ -264,7 +243,6 @@ const ScholarBooksPage = () => {
           alert('İndirme sırasında hata oluştu. Lütfen tekrar deneyin.');
           
           // If all download methods fail, don't open in new tab
-          // console.log('All download methods failed, not opening file in new tab');
         });
     } else {
       alert('İndirme dosyası bulunamadı.');
@@ -438,7 +416,6 @@ const ScholarBooksPage = () => {
                         alt={book.title}
                         className="w-full h-full object-cover"
                                                   onError={(e) => {
-                            // console.log('Slider image load error for:', book.title, 'URL:', getBookCoverImage(book));
                             e.target.src = book1; // Varsayılan resim
                           }}
                       />
@@ -483,7 +460,6 @@ const ScholarBooksPage = () => {
                               style={{ objectFit: 'cover' }}
                               className="card-img-top"
                               onError={(e) => {
-                                // console.log('Image load error for:', book.title, 'URL:', getBookCoverImage(book));
                                 e.target.src = book1; // Varsayılan resim
                               }}
                             />

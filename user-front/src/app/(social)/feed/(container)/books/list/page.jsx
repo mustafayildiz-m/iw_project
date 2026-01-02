@@ -211,7 +211,6 @@ const BooksListPage = () => {
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('booksViewMode', viewMode);
-        console.log('Görünüm modu kaydedildi:', viewMode); // Debug için
       } catch (error) {
         console.error('localStorage yazma hatası:', error);
       }

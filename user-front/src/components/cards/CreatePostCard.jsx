@@ -60,12 +60,10 @@ const CreatePostCard = () => {
   
   // Get user's profile picture or use default
   const getUserAvatar = () => {
-    console.log('🔍 getUserAvatar called with userInfo:', userInfo, 'profileData:', profileData);
     
     // First try to use the actual profile picture from API
     if (profileData?.photoUrl || profileData?.photo_url) {
       const photoUrl = profileData.photoUrl || profileData.photo_url;
-      console.log('📸 Using actual profile photo:', photoUrl);
       return photoUrl;
     }
     
@@ -73,40 +71,33 @@ const CreatePostCard = () => {
     if (userInfo?.id) {
       const userId = parseInt(userInfo.id) || 0;
       const avatarIndex = userId % 7;
-      // console.log('👤 User ID:', userId, 'Avatar Index:', avatarIndex);
       return guests[avatarIndex] || avatar1;
     }
     
     if (userInfo?.username) {
       const usernameHash = userInfo.username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
       const avatarIndex = usernameHash % 7;
-      // console.log('👤 Username hash:', usernameHash, 'Avatar Index:', avatarIndex);
       return guests[avatarIndex] || avatar1;
     }
     
-    // console.log('⚠️ No user info, using fallback avatar');
     return avatar1;
   };
   
   // Helper function to get proper image URL with cache busting
   const getImageUrl = (photoUrl, bustCache = false) => {
-    console.log('🖼️ getImageUrl called with photoUrl:', photoUrl, 'bustCache:', bustCache);
     
     // If photoUrl is null, undefined, or empty, return default avatar
     if (!photoUrl) {
-      console.log('⚠️ No photoUrl, returning default avatar');
       return avatar1;
     }
     
     // If photoUrl is an object (imported image), return it directly
     if (typeof photoUrl === 'object' && photoUrl.src) {
-      console.log('📦 photoUrl is an object, returning directly:', photoUrl);
       return photoUrl;
     }
     
     // If photoUrl is not a string, return default avatar
     if (typeof photoUrl !== 'string') {
-      console.log('⚠️ photoUrl is not a string, returning default avatar');
       return avatar1;
     }
     
@@ -115,7 +106,6 @@ const CreatePostCard = () => {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
       const url = `${apiBaseUrl}${photoUrl}`;
       const finalUrl = bustCache ? `${url}?t=${Date.now()}` : url;
-      console.log('✅ Generated URL for /uploads/ path:', finalUrl);
       return finalUrl;
     }
     
@@ -134,7 +124,6 @@ const CreatePostCard = () => {
   
   // Check authentication on component mount
   useEffect(() => {
-    // console.log('🔐 Auth state changed:', { isAuthenticated, userInfo });
     
     if (!isAuthenticated) {
       showNotification({
@@ -174,8 +163,6 @@ const CreatePostCard = () => {
         
         if (response.ok) {
           const data = await response.json();
-          console.log('📥 Profile data fetched:', data);
-          console.log('📸 photoUrl from API:', data.photoUrl || data.photo_url);
           setProfileData(data);
           // Force image reload with cache busting
           setImageKey(prev => prev + 1);
@@ -292,10 +279,6 @@ const CreatePostCard = () => {
   // Handle post submission
   const handlePostSubmit = async () => {
     try {
-      // console.log('🚀 Post submission started...');
-      // console.log('📝 Post content:', postContent);
-      // console.log('📁 Selected files:', selectedFiles);
-      // console.log('🔒 Privacy:', privacy);
       
       if (!postContent.trim()) {
         showNotification({
@@ -313,14 +296,11 @@ const CreatePostCard = () => {
       for (const file of selectedFiles) {
         if (file.type.startsWith('image/')) {
           imageUrl = file; // Pass the file directly
-          // console.log('🖼️ Image file selected:', file.name, file.type, file.size);
         } else if (file.type.startsWith('video/')) {
           videoUrl = file; // Pass the file directly
-          // console.log('🎥 Video file selected:', file.name, file.type, file.size);
         }
       }
 
-      // console.log('📤 Creating post with data:', {
       //   content: postContent,
       //   imageUrl: imageUrl ? imageUrl.name : null,
       //   videoUrl: videoUrl ? videoUrl.name : null,
@@ -335,7 +315,6 @@ const CreatePostCard = () => {
         privacy
       });
 
-      // console.log('✅ Post created successfully:', result);
 
       // Show success notification
       showNotification({
@@ -373,7 +352,6 @@ const CreatePostCard = () => {
       // Trigger the custom event to refresh posts without full page reload
       window.dispatchEvent(postCreatedEvent);
       
-      // console.log('📢 Post created event dispatched with data:', postCreatedEvent.detail);
     } catch (err) {
       // console.error('❌ Error creating post:', err);
       // console.error('❌ Error details:', {
@@ -547,7 +525,6 @@ const CreatePostCard = () => {
     </Button>
   );
 
-  console.log('🎨 CreatePostCard rendering, profileData:', profileData, 'userInfo:', userInfo);
   
   return <>
       <Card className="card-body shadow-sm border-0">
@@ -583,7 +560,6 @@ const CreatePostCard = () => {
                   opacity: imageLoading ? 0 : 1
                 }}
                 onLoad={() => {
-                  console.log('✅ Image loaded successfully');
                   setImageLoading(false);
                 }}
                 onError={(e) => {
@@ -961,7 +937,6 @@ const CreatePostCard = () => {
                   transition: 'opacity 0.3s ease-in-out' 
                 }}
                 onError={(e) => {
-                  // console.log('Event modal: Image error, falling back to default avatar');
                   e.target.src = typeof avatar1 === 'string' ? avatar1 : avatar1.src || avatar1;
                 }}
               />

@@ -24,7 +24,6 @@ export const getUserIdFromToken = () => {
     const decodedPayload = JSON.parse(atob(payload));
     const userId = decodedPayload.sub; // 'sub' contains the user ID
     
-    // console.log('Token decoded successfully:', {
     //   userId,
     //   email: decodedPayload.email,
     //   username: decodedPayload.username,
@@ -73,12 +72,10 @@ export const storeToken = (token, clearExisting = true) => {
     if (clearExisting) {
       // Eski token varsa sil
       localStorage.removeItem('token');
-      // console.log('Existing token cleared from localStorage');
     }
     
     // Yeni token'ı kaydet
     localStorage.setItem('token', token);
-    // console.log('New token stored in localStorage');
     
     // Custom event dispatch for same-tab localStorage changes
     window.dispatchEvent(new CustomEvent('localStorageChange', {
@@ -88,7 +85,6 @@ export const storeToken = (token, clearExisting = true) => {
     // Token'ı decode edip bilgileri logla
     const userInfo = getUserInfoFromToken();
     if (userInfo) {
-      // console.log('Token stored successfully for user:', userInfo);
     }
   } catch (error) {
     // console.error('Error storing token:', error);
@@ -101,7 +97,6 @@ export const storeToken = (token, clearExisting = true) => {
 export const clearToken = () => {
   try {
     localStorage.removeItem('token');
-    // console.log('Token cleared from localStorage');
     
     // Custom event dispatch for same-tab localStorage changes
     window.dispatchEvent(new CustomEvent('localStorageChange', {

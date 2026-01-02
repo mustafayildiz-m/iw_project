@@ -233,12 +233,10 @@ export const WebSocketChatProvider = ({ children }) => {
     }
 
     if (socketRef.current && isConnectedRef.current) {
-      // console.log('WebSocket zaten bağlı');
       return;
     }
 
     if (connectionAttemptRef.current) {
-      // console.log('WebSocket bağlantı denemesi devam ediyor');
       return;
     }
 

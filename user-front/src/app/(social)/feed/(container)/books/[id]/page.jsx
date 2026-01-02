@@ -1167,7 +1167,6 @@ const BookDetailPage = () => {
           try {
             userId = JSON.parse(userData).id;
           } catch (parseErr) {
-            console.log('User data parse error:', parseErr);
           }
         }
       }
@@ -1187,7 +1186,6 @@ const BookDetailPage = () => {
             userId = userData.id;
           }
         } catch (apiErr) {
-          console.log('API user fetch error:', apiErr);
         }
       }
       
@@ -1604,7 +1602,6 @@ const BookDetailPage = () => {
                                           try {
                                             userId = JSON.parse(userData).id;
                                           } catch (parseErr) {
-                                            console.log('User data parse error:', parseErr);
                                           }
                                         }
                                       }

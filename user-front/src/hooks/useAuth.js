@@ -29,7 +29,6 @@ export const useAuth = () => {
         setUserInfo(user);
         setLoading(false);
 
-        // console.log('Auth status checked:', {
         //   hasToken,
         //   hasValidToken: hasToken,
         //   userId,
@@ -50,7 +49,6 @@ export const useAuth = () => {
   // Session değiştiğinde token'ı localStorage'a yaz
   useEffect(() => {
     if (session?.access_token) {
-      // console.log('Session access token detected, storing in localStorage');
       storeToken(session.access_token, true); // Eski token'ı sil, yenisini yaz
       
       // Token bilgilerini güncelle

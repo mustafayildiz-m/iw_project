@@ -69,7 +69,6 @@ const ActionMenu = ({
           <DropdownItem
             href="#"
             onClick={() => {
-              // console.log('Unfollow button clicked for user:', name);
               if (onUnfollow) {
                 onUnfollow();
               } else {
@@ -89,7 +88,6 @@ const ActionMenu = ({
             <DropdownItem
               href="#"
               onClick={() => {
-                // console.log('Edit button clicked for post:', postId);
                 if (onEditPost) {
                   onEditPost(postId);
                 } else {
@@ -107,7 +105,6 @@ const ActionMenu = ({
             <DropdownItem
               href="#"
               onClick={() => {
-                // console.log('Delete button clicked for post:', postId);
                 if (onDeletePost) {
                   onDeletePost(postId);
                 } else {
@@ -456,12 +453,10 @@ const PostCard = ({
   // Helper function to get proper image URL
   const getImageUrl = (photoUrl, bustCache = false) => {
     if (process.env.NODE_ENV === 'development') {
-      // console.log('getImageUrl called with:', photoUrl);
     }
     // Check if photoUrl is valid and is a string
     if (!photoUrl || typeof photoUrl !== 'string' || photoUrl === 'null' || photoUrl === '' || photoUrl === 'undefined') {
       if (process.env.NODE_ENV === 'development') {
-        // console.log('Invalid photoUrl, using fallback avatar:', photoUrl);
       }
       return avatar7;
     }
@@ -477,7 +472,6 @@ const PostCard = ({
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
       const fullUrl = `${apiBaseUrl}${photoUrl}`;
       if (process.env.NODE_ENV === 'development') {
-        // console.log('Generated full URL for /uploads/ path:', fullUrl);
       }
       return bustCache ? `${fullUrl}?t=${Date.now()}` : fullUrl;
     }
@@ -487,7 +481,6 @@ const PostCard = ({
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
       const fullUrl = `${apiBaseUrl}/${photoUrl}`;
       if (process.env.NODE_ENV === 'development') {
-        // console.log('Generated full URL for uploads/ path:', fullUrl);
       }
       return bustCache ? `${fullUrl}?t=${Date.now()}` : fullUrl;
     }
@@ -496,7 +489,6 @@ const PostCard = ({
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
     const fullUrl = `${apiBaseUrl}/${photoUrl}`;
     if (process.env.NODE_ENV === 'development') {
-      // console.log('Generated full URL for relative path:', fullUrl);
     }
     return bustCache ? `${fullUrl}?t=${Date.now()}` : fullUrl;
   };
@@ -504,7 +496,6 @@ const PostCard = ({
   // Helper function to get proper video URL
   const getVideoUrl = (videoUrl) => {
     if (process.env.NODE_ENV === 'development') {
-      // console.log('getVideoUrl called with:', videoUrl);
     }
     if (!videoUrl || typeof videoUrl !== 'string') return null;
 
@@ -565,7 +556,6 @@ const PostCard = ({
 
   // Debug props (development only)
   if (process.env.NODE_ENV === 'development') {
-    // console.log('PostCard props:', { image, video, fileUrls, caption, title });
   }
 
   // State for comment delete confirmation
@@ -647,7 +637,6 @@ const PostCard = ({
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 />
-                {/* console.log('PostCard avatar debug:', {
                   postId,
                   socialUser: socialUser?.name,
                   avatar: socialUser?.avatar,
@@ -1011,9 +1000,7 @@ const PostCard = ({
                 <form onSubmit={(e) => {
                   e.preventDefault();
                   const commentText = e.target.comment.value.trim();
-                  // console.log('Form submitted, comment text:', commentText);
                   if (commentText && onAddComment) {
-                    // console.log('Calling onAddComment with:', postId, commentText);
 
                     // Save current scroll position
                     const currentScrollPosition = window.scrollY;
@@ -1027,7 +1014,6 @@ const PostCard = ({
                       window.scrollTo(0, currentScrollPosition);
                     }, 100);
                   } else {
-                    // console.log('Comment text is empty or onAddComment is not provided');
                   }
                 }}>
                   <textarea

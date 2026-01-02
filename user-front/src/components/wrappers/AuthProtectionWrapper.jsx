@@ -34,8 +34,6 @@ const AuthProtectionWrapper = ({
 
   // Debug için session durumunu logla
   useEffect(() => {
-    // console.log('Auth Status:', status);
-    // console.log('Session:', session);
   }, [status, session]);
 
   // Loading durumunda fallback göster

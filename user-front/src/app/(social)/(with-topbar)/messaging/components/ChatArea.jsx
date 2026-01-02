@@ -232,7 +232,6 @@ const ChatArea = () => {
                 <FaFaceSmile className="fs-6" />
               </DropdownToggle>
               <DropdownMenu className="p-0 rounded-4">
-                <EmojiPicker data={data} theme={theme} onEmojiSelect={(e) => console.info(e.native)} />
               </DropdownMenu>
             </Dropdown>
             <Button variant="secondary-soft" size="sm" className="ms-2">

@@ -81,18 +81,14 @@ const Posts = ({ userId, showOwnPosts = false }) => {
     const { userId: userIdToUnfollow, userType } = pendingAction;
     
     try {
-      // console.log('User confirmed unfollow operation for user:', userIdToUnfollow);
       
       // Get the token from localStorage
       const token = localStorage.getItem('token');
-      // console.log('Token found:', token ? 'Yes' : 'No');
       if (!token) {
         // console.error('No authentication token found');
         return;
       }
       
-      // console.log('Token length:', token.length);
-      // console.log('Token starts with:', token.substring(0, 20) + '...');
 
       // Make the DELETE request to unfollow the user
       // Determine the correct endpoint based on user type
@@ -114,24 +110,12 @@ const Posts = ({ userId, showOwnPosts = false }) => {
       }
       
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${endpoint}`;
-      // console.log('Making DELETE request to:', apiUrl);
-      // console.log('Request method: DELETE');
-      // console.log('Request headers:', {
       //   'Authorization': `Bearer ${token.substring(0, 20)}...`,
       //   'Content-Type': 'application/json'
       // });
       
-      // console.log('Request body:', requestBody);
-      // console.log('Current user ID:', userId);
-      // console.log('User to unfollow ID:', userIdToUnfollow);
-      // console.log('User type:', userType);
       
       // Log the exact curl command that would be equivalent
-      // console.log('Equivalent curl command:');
-      // console.log(`curl --location --request DELETE '${apiUrl}' \\`);
-      // console.log(`--header 'Content-Type: application/json' \\`);
-      // console.log(`--header 'Authorization: Bearer ${token.substring(0, 20)}...' \\`);
-      // console.log(`--data '${JSON.stringify(requestBody)}'`);
       
       const response = await fetch(apiUrl, {
         method: 'DELETE',
@@ -142,12 +126,8 @@ const Posts = ({ userId, showOwnPosts = false }) => {
         body: JSON.stringify(requestBody)
       });
 
-      // console.log('Response status:', response.status);
-      // console.log('Response status text:', response.statusText);
-      // console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
       if (response.ok) {
-        // console.log('User unfollowed successfully');
         // Close the modal first
         setShowUnfollowConfirm(false);
         // Refresh timeline to remove unfollowed user's posts
@@ -181,7 +161,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
     const { postId } = pendingAction;
     
     try {
-      // console.log('Deleting post:', postId);
       setDeletingPostId(postId);
       
       // Get the token from localStorage
@@ -202,7 +181,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
       });
 
       if (response.ok) {
-        // console.log('Post deleted successfully');
         // Close the modal first
         setShowDeleteConfirm(false);
         // Refresh timeline to remove deleted post
@@ -226,7 +204,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
 
   const handleHidePost = async (postId) => {
     try {
-      // console.log('Hiding post:', postId);
       // TODO: Implement hide post API call
     } catch (error) {
       // console.error('Error hiding post:', error);
@@ -235,7 +212,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
 
   const handleBlock = async (userIdToBlock) => {
     try {
-      // console.log('Blocking user:', userIdToBlock);
       // TODO: Implement block user API call
     } catch (error) {
       // console.error('Error blocking user:', error);
@@ -244,7 +220,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
 
   const handleReportPost = async (postId) => {
     try {
-      // console.log('Reporting post:', postId);
       // TODO: Implement report post API call
     } catch (error) {
       // console.error('Error reporting post:', error);
@@ -253,7 +228,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
 
   const handleSavePost = async (postId) => {
     try {
-      // console.log('Saving post:', postId);
       // TODO: Implement save post API call
     } catch (error) {
       // console.error('Error saving post:', error);
@@ -262,12 +236,8 @@ const Posts = ({ userId, showOwnPosts = false }) => {
 
   const handleAddComment = async (postId, commentText) => {
     try {
-      // console.log('Adding comment to post:', postId, 'Comment:', commentText);
       
       // Debug: Check what's in localStorage
-      // console.log('localStorage keys:', Object.keys(localStorage));
-      // console.log('localStorage token:', localStorage.getItem('token'));
-      // console.log('localStorage next-auth.session-token:', localStorage.getItem('next-auth.session-token'));
       
       // Get the token from localStorage
       let token = localStorage.getItem('token');
@@ -275,7 +245,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
       // If token not found, try next-auth.session-token
       if (!token) {
         token = localStorage.getItem('next-auth.session-token');
-        // console.log('Using next-auth token:', token ? 'Found' : 'Not found');
       }
       
       if (!token) {
@@ -290,7 +259,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
         const payload = token.split('.')[1];
         const decodedPayload = JSON.parse(atob(payload));
         userId = decodedPayload.sub;
-        // console.log('Extracted user_id from token:', userId);
       } catch (error) {
         // console.error('Error extracting user_id from token:', error);
         alert('Kullanıcı bilgisi alınamadı. Lütfen tekrar giriş yapın.');
@@ -299,12 +267,9 @@ const Posts = ({ userId, showOwnPosts = false }) => {
 
       // Make the POST request to add comment
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/user-post-comments`;
-      // console.log('Making POST request to:', apiUrl);
-      // console.log('Request headers:', {
       //   'Authorization': `Bearer ${token.substring(0, 20)}...`,
       //   'Content-Type': 'application/json'
       // });
-      // console.log('Request body:', {
       //   post_id: postId,
       //   user_id: userId,
       //   content: commentText
@@ -323,16 +288,11 @@ const Posts = ({ userId, showOwnPosts = false }) => {
         })
       });
 
-      // console.log('Response status:', response.status);
-      // console.log('Response status text:', response.statusText);
 
       if (response.ok) {
-        // console.log('Comment added successfully');
         
         // Get the response data to get the new comment details
         const newComment = await response.json();
-        // console.log('New comment data:', newComment);
-        // console.log('Comment user info:', {
         //   user_name: newComment.user_name,
         //   user_username: newComment.user_username,
         //   user_photo_url: newComment.user_photo_url,
@@ -368,8 +328,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
       }
 
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/user-post-comments/post/${postId}`;
-      // console.log('Fetching comments for post:', postId);
-      // console.log('API URL:', apiUrl);
       
       const response = await fetch(apiUrl, {
         method: 'GET',
@@ -381,7 +339,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
 
       if (response.ok) {
         const comments = await response.json();
-        // console.log('Comments fetched successfully:', comments);
         return comments;
       } else {
         // console.error('Failed to fetch comments:', response.status, response.statusText);
@@ -427,7 +384,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
     setIsEditing(true);
     
     try {
-      // console.log('Updating post:', editingPost.id, 'with data:', postData);
       
       // Get the token from localStorage
       const token = localStorage.getItem('token');
@@ -438,8 +394,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
 
       // Make the PUT request to update the post
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/user-posts/${editingPost.id}`;
-      // console.log('Making PUT request to:', apiUrl);
-      // console.log('Request headers:', {
       //   'Authorization': `Bearer ${token.substring(0, 20)}...`,
       //   'Content-Type': 'application/json'
       // });
@@ -456,11 +410,8 @@ const Posts = ({ userId, showOwnPosts = false }) => {
         })
       });
 
-      // console.log('Response status:', response.status);
-      // console.log('Response status text:', response.statusText);
 
       if (response.ok) {
-        // console.log('Post updated successfully');
         // Close modal and refresh timeline
         setShowEditModal(false);
         setEditingPost(null);
@@ -532,7 +483,6 @@ const Posts = ({ userId, showOwnPosts = false }) => {
 
   // Debug information and load comments
   useEffect(() => {
-    // console.log('Posts: Timeline posts:', posts);
     
     // Load comments only for user posts (not scholar posts)
     if (posts && posts.length > 0) {

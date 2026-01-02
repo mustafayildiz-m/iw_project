@@ -36,8 +36,6 @@ export default function FollowersPage() {
         }
 
         // Fetch followers data
-        // console.log('Fetching followers from:', `${process.env.NEXT_PUBLIC_API_URL}/user-follow/followers`);
-        // console.log('Token exists:', !!token);
 
         // Önce mevcut endpoint'i dene
         let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user-follow/followers?limit=100`, {
@@ -49,7 +47,6 @@ export default function FollowersPage() {
 
         // Eğer başarısız olursa alternatif endpoint'leri dene
         if (!response.ok) {
-          // console.log('First endpoint failed, trying alternative...');
 
           // Alternatif 1: /user-follow/followers
           response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user-follow/followers`, {
@@ -60,7 +57,6 @@ export default function FollowersPage() {
           });
 
           if (!response.ok) {
-            // console.log('Second endpoint failed, trying third...');
 
             // Alternatif 2: /following/followers
             response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/following/followers`, {
@@ -74,21 +70,15 @@ export default function FollowersPage() {
 
         if (response.ok) {
           const data = await response.json();
-          // console.log('Followers API response:', data);
-          // console.log('Response status:', response.status);
-          // console.log('Response headers:', response.headers);
 
           // API'den gelen veriyi işle
           const followers = data.users || data.followers || data || [];
-          // console.log('Processed followers:', followers);
-          // console.log('Followers length:', followers.length);
 
           setFollowersData(followers);
           setFilteredData(followers);
 
           // Update stats if available
           if (data.stats) {
-            // console.log('Using API stats:', data.stats);
             setStats(data.stats);
           } else {
             // Calculate stats from data
@@ -99,7 +89,6 @@ export default function FollowersPage() {
               followersScholarsCount: scholarsCount,
               totalFollowersCount: followers.length
             };
-            // console.log('Calculated stats:', calculatedStats);
             setStats(calculatedStats);
           }
         }
