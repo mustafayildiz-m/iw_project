@@ -8,16 +8,16 @@ import { useSession } from 'next-auth/react';
 
 const DebugSearchPage = () => {
   const { data: session, status } = useSession();
-  const { 
-    performSearch, 
-    searchResults, 
-    isSearching, 
-    showResults, 
+  const {
+    performSearch,
+    searchResults,
+    isSearching,
+    showResults,
     searchQuery,
     searchType,
-    clearSearch 
+    clearSearch
   } = useSearchContext();
-  
+
   const [query, setQuery] = useState('');
   const [searchTypeInput, setSearchTypeInput] = useState('all');
   const [manualResults, setManualResults] = useState(null);
@@ -25,12 +25,7 @@ const DebugSearchPage = () => {
 
   // Debug: Session ve context bilgilerini göster
   useEffect(() => {
-      searchResults,
-      isSearching,
-      showResults,
-      searchQuery,
-      searchType
-    });
+    // Context and session state tracking
   }, [session, status, searchResults, isSearching, showResults, searchQuery, searchType]);
 
   const handleManualSearch = async () => {
@@ -57,7 +52,7 @@ const DebugSearchPage = () => {
     setManualResults(null);
 
     try {
-      
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/search/users?q=${encodeURIComponent(query)}&limit=10`, {
         headers: {
           'Authorization': `Bearer ${session.accessToken}`,
@@ -190,8 +185,8 @@ const DebugSearchPage = () => {
                 <Col md={5}>
                   <Form.Label>&nbsp;</Form.Label>
                   <div className="d-flex gap-2">
-                    <Button 
-                      variant="primary" 
+                    <Button
+                      variant="primary"
                       onClick={handleManualSearch}
                       disabled={isSearching || !query.trim()}
                     >
@@ -207,8 +202,8 @@ const DebugSearchPage = () => {
                         </>
                       )}
                     </Button>
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       onClick={handleDirectAPI}
                       disabled={!query.trim() || !session?.accessToken}
                     >
@@ -307,14 +302,14 @@ const DebugSearchPage = () => {
                       </div>
                     )}
 
-                    {searchResults.users.length === 0 && 
-                     searchResults.scholars.length === 0 && 
-                     searchResults.followers.length === 0 && (
-                      <Alert variant="info">
-                        <BsSearch className="me-2" />
-                        Context arama sonucu bulunamadı.
-                      </Alert>
-                    )}
+                    {searchResults.users.length === 0 &&
+                      searchResults.scholars.length === 0 &&
+                      searchResults.followers.length === 0 && (
+                        <Alert variant="info">
+                          <BsSearch className="me-2" />
+                          Context arama sonucu bulunamadı.
+                        </Alert>
+                      )}
                   </CardBody>
                 </Card>
               )}

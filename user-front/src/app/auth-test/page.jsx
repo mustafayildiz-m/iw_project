@@ -21,13 +21,7 @@ export default function AuthTest() {
     const token = getToken();
     const userId = getUserIdFromToken();
     const user = getUserInfoFromToken();
-    
-      hasToken: !!token,
-      token: token?.substring(0, 50) + '...',
-      userId,
-      user
-    });
-    
+
     setLoginResult({
       success: true,
       token: token?.substring(0, 50) + '...',
@@ -39,7 +33,7 @@ export default function AuthTest() {
   return (
     <div className="container mt-5">
       <h1>Authentication Test</h1>
-      
+
       <div className="row">
         <div className="col-md-6">
           <h3>Login Form</h3>
@@ -49,7 +43,7 @@ export default function AuthTest() {
               type="email"
               className="form-control"
               value={credentials.email}
-              onChange={(e) => setCredentials({...credentials, email: e.target.value})}
+              onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
             />
           </div>
           <div className="mb-3">
@@ -58,30 +52,30 @@ export default function AuthTest() {
               type="password"
               className="form-control"
               value={credentials.password}
-              onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
             />
           </div>
-          <button 
-            className="btn btn-primary me-2" 
+          <button
+            className="btn btn-primary me-2"
             onClick={handleLogin}
             disabled={loading}
           >
             {loading ? 'Loading...' : 'Login'}
           </button>
-          <button 
-            className="btn btn-secondary" 
+          <button
+            className="btn btn-secondary"
             onClick={checkToken}
           >
             Check Token
           </button>
         </div>
-        
+
         <div className="col-md-6">
           <h3>Status</h3>
           <p><strong>Authenticated:</strong> {isAuthenticated ? 'Yes' : 'No'}</p>
           <p><strong>User Info:</strong> {JSON.stringify(userInfo, null, 2)}</p>
           <p><strong>Loading:</strong> {loading ? 'Yes' : 'No'}</p>
-          
+
           {isAuthenticated && (
             <button className="btn btn-danger" onClick={logout}>
               Logout
@@ -89,7 +83,7 @@ export default function AuthTest() {
           )}
         </div>
       </div>
-      
+
       {loginResult && (
         <div className="mt-4">
           <h3>Login Result</h3>

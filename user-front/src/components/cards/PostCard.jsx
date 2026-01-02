@@ -637,11 +637,6 @@ const PostCard = ({
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 />
-                  postId,
-                  socialUser: socialUser?.name,
-                  avatar: socialUser?.avatar,
-                  generatedUrl: getImageUrl(socialUser?.avatar)
-                }) */}
               </span>
             </div>
 
