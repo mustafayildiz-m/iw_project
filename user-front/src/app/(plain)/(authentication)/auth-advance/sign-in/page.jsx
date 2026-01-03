@@ -15,7 +15,7 @@ const SignIn = () => {
     <div className={styles.authWrapper}>
       {/* Language Switcher - Desktop: Top Right, Mobile: Bottom */}
       <div className={`${styles.languageSwitcher} d-none d-md-block`}>
-        <LanguageSwitcher variant="simple" />
+        <LanguageSwitcher variant="auth" />
       </div>
       
       <div className={styles.splitLayout}>
@@ -61,7 +61,7 @@ const SignIn = () => {
             
             {/* Language Switcher Mobile - Bottom */}
             <div className="d-md-none mt-4 text-center">
-              <LanguageSwitcher variant="simple" />
+              <LanguageSwitcher variant="auth" />
             </div>
           </Container>
         </div>

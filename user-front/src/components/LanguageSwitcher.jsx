@@ -1,12 +1,17 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Select from 'react-select';
 import { useLanguage } from '@/context/useLanguageContext';
 import './LanguageSwitcher.css';
 
 const LanguageSwitcher = ({ variant = 'dropdown' }) => {
   const { locale, changeLocale, supportedLocales, t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // Dil kodlarına göre bayrak emoji'leri
   const getFlagEmoji = (code) => {
@@ -83,7 +88,16 @@ const LanguageSwitcher = ({ variant = 'dropdown' }) => {
   // Simple button variant (for auth pages)
   if (variant === 'simple') {
     return (
-      <div className="d-flex gap-2 justify-content-center align-items-center">
+      <div 
+        className="d-flex gap-2 justify-content-center align-items-center flex-wrap language-switcher-simple-container"
+        style={{
+          maxWidth: '100%',
+          overflowX: 'auto',
+          padding: '0.25rem 0',
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(255, 255, 255, 0.3) transparent'
+        }}
+      >
         {languageOptions.map(opt => (
           <button
             key={opt.code}
@@ -99,7 +113,9 @@ const LanguageSwitcher = ({ variant = 'dropdown' }) => {
                 ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
                 : 'transparent',
               color: locale === opt.code ? '#fff' : 'rgba(255, 255, 255, 0.9)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              whiteSpace: 'nowrap',
+              flexShrink: 0
             }}
           >
             {opt.flag} {opt.code.toUpperCase()}
@@ -109,6 +125,79 @@ const LanguageSwitcher = ({ variant = 'dropdown' }) => {
     );
   }
   
+  // Auth pages select2 style (compact and elegant)
+  const authStyles = {
+    control: (base, state) => ({
+      ...base,
+      borderRadius: '50px',
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      boxShadow: state.isFocused ? '0 4px 12px rgba(102, 126, 234, 0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
+      padding: '0.25rem 0.5rem',
+      minHeight: '36px',
+      fontSize: '0.85rem',
+      fontWeight: '600',
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(10px)',
+      '&:hover': {
+        borderColor: '#667eea',
+        boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+      }
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '12px',
+      border: '1px solid rgba(0, 0, 0, 0.1)',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+      marginTop: '8px',
+      zIndex: 10000,
+      minWidth: '280px',
+      maxWidth: '350px',
+      backgroundColor: '#ffffff',
+      overflow: 'hidden'
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 10000
+    }),
+    menuList: () => ({
+      padding: 0
+    }),
+    option: (base, state) => ({
+      ...base,
+      borderRadius: '8px',
+      padding: '0.5rem 0.75rem',
+      fontSize: '0.9rem',
+      fontWeight: state.isSelected ? '600' : '500',
+      backgroundColor: state.isSelected 
+        ? '#667eea' 
+        : state.isFocused 
+        ? '#f8f9fa' 
+        : 'transparent',
+      color: state.isSelected ? 'white' : '#1e293b',
+      cursor: 'pointer',
+      '&:hover': {
+        backgroundColor: state.isSelected 
+          ? '#667eea' 
+          : '#f8f9fa'
+      }
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: '#1e293b',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem'
+    }),
+    indicatorSeparator: () => ({
+      display: 'none'
+    }),
+    dropdownIndicator: (base) => ({
+      ...base,
+      color: '#1e293b',
+      padding: '0.25rem'
+    })
+  };
+
   // Select2 style dropdown variant (for main app)
   const customStyles = {
     control: (base, state) => ({
@@ -187,8 +276,9 @@ const LanguageSwitcher = ({ variant = 'dropdown' }) => {
           gridTemplateColumns: '1fr 1fr', 
           gap: '0.25rem',
           padding: '0.5rem',
-          maxHeight: '400px',
-          overflowY: 'auto'
+          maxHeight: '60vh',
+          overflowY: 'auto',
+          overflowX: 'hidden'
         }}
       >
         {children}
@@ -196,6 +286,61 @@ const LanguageSwitcher = ({ variant = 'dropdown' }) => {
     );
   };
 
+  // Auth variant - compact select2 for auth pages
+  if (variant === 'auth') {
+    if (!mounted) {
+      return (
+        <div className="language-switcher-select2" style={{ minWidth: '180px', maxWidth: '220px', position: 'relative', zIndex: 10000 }}>
+          <div style={{ 
+            height: '36px', 
+            borderRadius: '50px',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 1rem',
+            fontSize: '0.85rem',
+            fontWeight: '600',
+            color: '#1e293b'
+          }}>
+            Dil seç...
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="language-switcher-select2" style={{ minWidth: '180px', maxWidth: '220px', position: 'relative', zIndex: 10000, overflow: 'visible' }}>
+        <Select
+          value={currentOption}
+          onChange={(selectedOption) => {
+            if (selectedOption) {
+              changeLocale(selectedOption.value);
+            }
+          }}
+          options={languageOptions}
+          styles={authStyles}
+          components={{ MenuList }}
+          isSearchable={true}
+          placeholder="Dil seç..."
+          formatOptionLabel={({ flag, name }) => (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '1.2rem' }}>{flag}</span>
+              <span>{name}</span>
+            </div>
+          )}
+          className="language-select"
+          classNamePrefix="language-select"
+          menuPortalTarget={mounted ? document.body : null}
+          menuPosition="fixed"
+          menuShouldScrollIntoView={true}
+          menuPlacement="auto"
+        />
+      </div>
+    );
+  }
+
+  // Default dropdown variant (for main app)
   return (
     <div className="language-switcher-select2" style={{ minWidth: '200px', maxWidth: '250px' }}>
       <Select

@@ -354,9 +354,17 @@
 .languageSwitcher {
   position: absolute;
   top: 0;
-  right: 0;
+  left: 0;
   margin: 1rem;
-  z-index: 30;
+  z-index: 10000;
+  max-width: calc(100vw - 2rem);
+  width: auto;
+  overflow: visible;
+}
+
+.languageSwitcher > div {
+  max-width: 100%;
+  overflow: visible;
 }
 
 .authWrapper button {
@@ -385,8 +393,9 @@
   .languageSwitcher {
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
     margin: 1rem;
+    max-width: calc(100vw - 2rem);
   }
 
   .leftContainer {

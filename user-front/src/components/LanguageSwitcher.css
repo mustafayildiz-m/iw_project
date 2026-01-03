@@ -58,7 +58,21 @@
 }
 
 .language-select__menu {
-  z-index: 9999 !important;
+  z-index: 10000 !important;
+}
+
+.language-select__menu-portal {
+  z-index: 10000 !important;
+}
+
+/* Ensure menu portal is visible */
+body > div[id*="react-select"] {
+  z-index: 10000 !important;
+  overflow: visible !important;
+}
+
+body > div[id*="react-select"] > div {
+  overflow: visible !important;
 }
 
 .language-select__menu-list {
@@ -136,6 +150,24 @@
 
 [data-bs-theme="dark"] .language-switcher-menu .language-switcher-item span {
   color: var(--bs-light, #fff) !important;
+}
+
+/* Simple variant scrollbar styling */
+.language-switcher-simple-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.language-switcher-simple-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.language-switcher-simple-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.language-switcher-simple-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 /* Language Switcher Item */

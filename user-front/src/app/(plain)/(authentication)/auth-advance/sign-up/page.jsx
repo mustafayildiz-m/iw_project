@@ -16,7 +16,7 @@ const SignUp = () => {
       <Container style={{ position: 'relative', zIndex: 20, maxWidth: '100%' }}>
         {/* Language Switcher - Desktop: Top Right, Mobile: Bottom */}
         <div className={`${styles.languageSwitcher} d-none d-md-block`}>
-          <LanguageSwitcher variant="simple" />
+          <LanguageSwitcher variant="auth" />
         </div>
         
         <Row className="justify-content-center">
@@ -59,7 +59,7 @@ const SignUp = () => {
           {/* Language Switcher Mobile - Bottom */}
           <Col xs={12} className="d-md-none">
             <div className="text-center mt-3">
-              <LanguageSwitcher variant="simple" />
+              <LanguageSwitcher variant="auth" />
             </div>
           </Col>
         </Row>
