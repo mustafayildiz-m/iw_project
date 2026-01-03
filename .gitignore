@@ -52,6 +52,7 @@ backup.sql
 *.db
 
 backend/uploads/*
-# PDF'leri dahil et
+# PDF'leri dahil et - önce klasörü, sonra içeriğini dahil et
+!backend/uploads/pdfs
 !backend/uploads/pdfs/
 !backend/uploads/pdfs/**
