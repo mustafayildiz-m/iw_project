@@ -85,72 +85,92 @@ export class AppController {
   @Get('statistics/recent-activities')
   @UseGuards(JwtAuthGuard)
   async getRecentActivities() {
-    const activities: Array<{type: string; title: string; description: string; createdAt: Date; icon: string; color: string}> = [];
+    try {
+      const activities: Array<{type: string; title: string; description: string; createdAt: Date; icon: string; color: string}> = [];
 
-    // Son eklenen kitapları al
-    const recentBooks = await this.bookRepository.find({
-      order: { createdAt: 'DESC' },
-      take: 3,
-      relations: ['translations'],
-    });
+      // Son eklenen kitapları al
+      try {
+        const recentBooks = await this.bookRepository.find({
+          order: { createdAt: 'DESC' },
+          take: 3,
+          relations: ['translations'],
+        });
 
-    recentBooks.forEach((book) => {
-      const bookTitle = book.translations?.[0]?.title || 'İsimsiz Kitap';
-      activities.push({
-        type: 'book',
-        title: 'Yeni kitap eklendi',
-        description: bookTitle,
-        createdAt: book.createdAt,
-        icon: 'BookOpen',
-        color: 'bg-blue-500',
-      });
-    });
+        recentBooks.forEach((book) => {
+          const bookTitle = book.translations?.[0]?.title || 'İsimsiz Kitap';
+          activities.push({
+            type: 'book',
+            title: 'Yeni kitap eklendi',
+            description: bookTitle,
+            createdAt: book.createdAt,
+            icon: 'BookOpen',
+            color: 'bg-blue-500',
+          });
+        });
+      } catch (error) {
+        console.error('Error fetching recent books:', error);
+      }
 
-    // Son eklenen âlimleri al
-    const recentScholars = await this.scholarRepository.find({
-      order: { createdAt: 'DESC' },
-      take: 3,
-    });
+      // Son eklenen âlimleri al
+      try {
+        const recentScholars = await this.scholarRepository.find({
+          order: { createdAt: 'DESC' },
+          take: 3,
+        });
 
-    recentScholars.forEach((scholar) => {
-      activities.push({
-        type: 'scholar',
-        title: 'Yeni âlim eklendi',
-        description: scholar.fullName,
-        createdAt: scholar.createdAt,
-        icon: 'Users',
-        color: 'bg-emerald-500',
-      });
-    });
+        recentScholars.forEach((scholar) => {
+          activities.push({
+            type: 'scholar',
+            title: 'Yeni âlim eklendi',
+            description: scholar.fullName,
+            createdAt: scholar.createdAt,
+            icon: 'Users',
+            color: 'bg-emerald-500',
+          });
+        });
+      } catch (error) {
+        console.error('Error fetching recent scholars:', error);
+      }
 
-    // Son gönderileri al
-    const recentPosts = await this.scholarPostRepository.find({
-      order: { createdAt: 'DESC' },
-      take: 2,
-      relations: ['scholar', 'translations'],
-    });
+      // Son gönderileri al (translations relation'ı olmayabilir)
+      try {
+        const recentPosts = await this.scholarPostRepository.find({
+          order: { createdAt: 'DESC' },
+          take: 2,
+          relations: ['scholar'],
+        });
 
-    recentPosts.forEach((post) => {
-      const content = post.translations?.[0]?.content?.substring(0, 50) || 'Gönderi içeriği';
-      activities.push({
-        type: 'post',
-        title: 'Yeni gönderi',
-        description: post.scholar?.fullName 
-          ? `${post.scholar.fullName} - ${content}...` 
-          : `${content}...`,
-        createdAt: post.createdAt,
-        icon: 'FileText',
-        color: 'bg-purple-500',
-      });
-    });
+        recentPosts.forEach((post) => {
+          // Translations tablosu yoksa sadece scholar bilgisini kullan
+          const description = post.scholar?.fullName 
+            ? `${post.scholar.fullName} - Yeni gönderi` 
+            : 'Yeni gönderi';
+          
+          activities.push({
+            type: 'post',
+            title: 'Yeni gönderi',
+            description: description,
+            createdAt: post.createdAt,
+            icon: 'FileText',
+            color: 'bg-purple-500',
+          });
+        });
+      } catch (error) {
+        console.error('Error fetching recent posts:', error);
+      }
 
-    // Tarihe göre sırala (en yeni en üstte)
-    activities.sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+      // Tarihe göre sırala (en yeni en üstte)
+      activities.sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
 
-    // En son 10 aktiviteyi döndür
-    return activities.slice(0, 10);
+      // En son 10 aktiviteyi döndür
+      return activities.slice(0, 10);
+    } catch (error) {
+      console.error('Error in getRecentActivities:', error);
+      // Hata durumunda boş array döndür
+      return [];
+    }
   }
 
   @Get()
