@@ -3,7 +3,13 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const LanguageContext = createContext(undefined);
-const SUPPORTED_LOCALES = ['tr', 'en', 'ar', 'de', 'fr', 'ja'];
+// En çok konuşulan diller ve önemli diller
+const SUPPORTED_LOCALES = [
+  'tr', 'en', 'ar', 'de', 'fr', 'ja',  // Mevcut diller
+  'zh', 'hi', 'es', 'pt', 'ru', 'it', 'ko',  // En çok konuşulan diller
+  'uk', 'ku', 'ro', 'bg', 'sr', 'hu', 'cs', 'pl', 'sk', 'sl', 'mk', 'hy',  // Avrupa dilleri
+  'mr', 'te', 'gu', 'ml', 'kn', 'or'  // Hindistan dilleri
+];
 const DEFAULT_LOCALE = 'en';
 
 export const useLanguage = () => {
@@ -75,9 +81,10 @@ export const LanguageProvider = ({ children }) => {
     }
     loadMessages(newLocale);
     
-    // Update document direction for RTL languages
+    // Update document direction for RTL languages (Arabic, Hebrew, Urdu, Farsi, etc.)
+    const rtlLanguages = ['ar', 'he', 'ur', 'fa', 'yi'];
     if (typeof window !== 'undefined') {
-      document.documentElement.dir = newLocale === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.dir = rtlLanguages.includes(newLocale) ? 'rtl' : 'ltr';
       document.documentElement.lang = newLocale;
     }
   }, [loadMessages]);
@@ -114,7 +121,7 @@ export const LanguageProvider = ({ children }) => {
     t,
     loading,
     supportedLocales: SUPPORTED_LOCALES,
-    isRTL: locale === 'ar'
+    isRTL: ['ar', 'he', 'ur', 'fa', 'yi'].includes(locale)
   };
 
   return (

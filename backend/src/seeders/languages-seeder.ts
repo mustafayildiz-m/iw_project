@@ -13,7 +13,7 @@ export class LanguagesSeeder {
   async seed() {
     console.log('🌱 Starting languages seeding...');
 
-    // 60 farklı dil
+    // En çok konuşulan 100+ dil ve diğer önemli diller
     const languages = [
       // İlk 30 dil
       { name: 'Türkçe', code: 'tr' },
@@ -86,7 +86,55 @@ export class LanguagesSeeder {
       { name: 'Yoruba', code: 'yo' },
       { name: 'Luganda', code: 'lg' },
       { name: 'Rohingya', code: 'rhg' },
-      { name: 'Katalanca', code: 'ca' }
+      { name: 'Katalanca', code: 'ca' },
+      
+      // En çok konuşulan 100 dil listesinden eksik diller
+      // Hindistan dilleri
+      { name: 'Marathi', code: 'mr' },
+      { name: 'Telugu', code: 'te' },
+      { name: 'Gujarati', code: 'gu' },
+      { name: 'Malayalam', code: 'ml' },
+      { name: 'Kannada', code: 'kn' },
+      { name: 'Odia', code: 'or' },
+      
+      // Avrupa dilleri
+      { name: 'Ukraynaca', code: 'uk' },
+      { name: 'Kürtçe', code: 'ku' },
+      { name: 'Rumence', code: 'ro' },
+      { name: 'Bulgarca', code: 'bg' },
+      { name: 'Sırpça', code: 'sr' },
+      { name: 'Macarca', code: 'hu' },
+      { name: 'Çekçe', code: 'cs' },
+      { name: 'Lehçe', code: 'pl' },
+      { name: 'Slovakça', code: 'sk' },
+      { name: 'Slovence', code: 'sl' },
+      { name: 'Makedonca', code: 'mk' },
+      { name: 'Ermenice', code: 'hy' },
+      
+      // Asya dilleri
+      { name: 'Myanmar', code: 'my' },
+      { name: 'Lao', code: 'lo' },
+      { name: 'Khmer', code: 'km' },
+      { name: 'Sinhala', code: 'si' },
+      { name: 'Moğolca', code: 'mn' },
+      { name: 'Cava', code: 'jv' },
+      
+      // Afrika dilleri
+      { name: 'Zulu', code: 'zu' },
+      { name: 'Xhosa', code: 'xh' },
+      { name: 'Shona', code: 'sn' },
+      { name: 'Amharic', code: 'am' },
+      { name: 'Bambara', code: 'bm' },
+      { name: 'Fulah', code: 'ff' },
+      { name: 'Lingala', code: 'ln' },
+      { name: 'Kikongo', code: 'kg' },
+      { name: 'Rundi', code: 'rn' },
+      { name: 'Somalice', code: 'so' },
+      { name: 'Fon', code: 'fon' },
+      
+      // Diğer diller
+      { name: 'Esperanto', code: 'eo' },
+      { name: 'Baskça', code: 'eu' }
     ];
 
     for (const languageData of languages) {
