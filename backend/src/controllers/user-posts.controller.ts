@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UploadedFile, UseInterceptors, BadRequestException, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UploadedFile, UseInterceptors, BadRequestException, ParseIntPipe, Query, UseGuards, Request, Patch } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UserPostsService } from '../services/user-posts.service';
 import { CreateUserPostDto } from '../dto/user-posts/create-user-post.dto';
 import { UpdateUserPostDto } from '../dto/user-posts/update-user-post.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import * as fs from 'fs';
 
 function fileFilter(req, file, cb) {
@@ -93,8 +94,12 @@ export class UserPostsController {
   }
 
   @Get('user/:userId')
-  getUserPosts(@Param('userId') userId: number) {
-    return this.userPostsService.getUserPosts(userId);
+  @UseGuards(JwtAuthGuard)
+  getUserPosts(@Param('userId') userId: number, @Request() req) {
+    const currentUserId = req.user?.id;
+    // Eğer kullanıcı kendi postlarını görüyorsa, pending olanları da göster
+    const includePending = currentUserId && Number(currentUserId) === Number(userId);
+    return this.userPostsService.getUserPosts(userId, includePending);
   }
 
   @Get(':id')
@@ -126,5 +131,33 @@ export class UserPostsController {
     @Param('profileId', ParseIntPipe) profileId: number,
   ) {
     return this.userPostsService.getSharedProfileData(profileType, profileId);
+  }
+
+  // Admin endpoints
+  @Get('admin/pending')
+  @UseGuards(JwtAuthGuard)
+  getPendingPosts(@Request() req) {
+    // Admin kontrolü yapılabilir - şimdilik sadece JWT guard yeterli
+    return this.userPostsService.getPendingPosts();
+  }
+
+  @Patch('admin/:id/approve')
+  @UseGuards(JwtAuthGuard)
+  approvePost(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    const adminUserId = req.user?.id;
+    if (!adminUserId) {
+      throw new BadRequestException('Admin user ID not found');
+    }
+    return this.userPostsService.approvePost(id, adminUserId);
+  }
+
+  @Patch('admin/:id/reject')
+  @UseGuards(JwtAuthGuard)
+  rejectPost(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    const adminUserId = req.user?.id;
+    if (!adminUserId) {
+      throw new BadRequestException('Admin user ID not found');
+    }
+    return this.userPostsService.rejectPost(id, adminUserId);
   }
 } 

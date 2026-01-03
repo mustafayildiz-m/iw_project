@@ -652,6 +652,7 @@ const UserFeedPage = () => {
                 commentsCount={post.comments_count || post.commentsCount || 0}
                 isUserPost={true}
                 isOwnPost={isCurrentUser && (post.user_id === currentUserId || post.userId === currentUserId)}
+                status={post.status || null}
                 onUnfollow={isCurrentUser && (post.user_id === currentUserId || post.userId === currentUserId) ? null : () => handleUnfollow(post.user_id || post.userId, 'user')}
                 onDeletePost={isCurrentUser && (post.user_id === currentUserId || post.userId === currentUserId) ? (postId) => handleDeletePost(postId) : null}
                 onEditPost={isCurrentUser && (post.user_id === currentUserId || post.userId === currentUserId) ? (postId) => handleEditPost(postId) : null}

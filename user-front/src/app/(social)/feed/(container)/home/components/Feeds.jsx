@@ -163,6 +163,10 @@ const Feeds = ({ userId }) => {
   // Always call hooks first, before any conditional returns
   const { posts: timelinePosts, loading, error, refetch, removePost } = useTimelinePosts(userId);
   
+  // State for user's own pending posts
+  const [pendingPosts, setPendingPosts] = useState([]);
+  const [loadingPendingPosts, setLoadingPendingPosts] = useState(false);
+  
   // State for delete operation
   const [deletingPostId, setDeletingPostId] = useState(null);
   
@@ -187,7 +191,43 @@ const Feeds = ({ userId }) => {
   useEffect(() => {
     setSelectedLanguages({});
   }, [locale]);
-  
+
+  // Fetch user's own pending posts
+  useEffect(() => {
+    const fetchPendingPosts = async () => {
+      if (!userId) return;
+      
+      try {
+        setLoadingPendingPosts(true);
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/user-posts/user/${userId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          // Filter only pending posts
+          const pending = data.filter(post => post.status === 'pending');
+          setPendingPosts(pending);
+        }
+      } catch (error) {
+        console.error('Error fetching pending posts:', error);
+      } finally {
+        setLoadingPendingPosts(false);
+      }
+    };
+
+    fetchPendingPosts();
+  }, [userId]);
+
   // Handler functions for post actions
   const handleUnfollow = async (userIdToUnfollow, userType = 'user') => {
     // Store the action details and show confirmation dialog
@@ -839,6 +879,49 @@ const Feeds = ({ userId }) => {
         }}
       />
 
+      {/* User's Own Pending Posts (shown dimmed) */}
+      {pendingPosts && pendingPosts.length > 0 && (
+        pendingPosts.map((post) => {
+          return (
+            <div key={`pending-${post.id}`} style={{ opacity: 0.6, filter: 'grayscale(0.3)' }}>
+              <PostCard 
+                postId={post.id}
+                createdAt={post.created_at}
+                timeAgo={post.timeAgo}
+                caption={post.content}
+                title={post.title}
+                image={post.image_url}
+                video={post.video_url}
+                fileUrls={[]}
+                socialUser={{
+                  id: post.user_id,
+                  name: post.user_name || `User ${post.user_id}`,
+                  username: post.user_username,
+                  avatar: post.user_photo_url
+                }}
+                likesCount={0}
+                commentsCount={0}
+                isUserPost={true}
+                isOwnPost={true}
+                status="pending"
+                onDeletePost={(postId) => handleDeletePost(postId)}
+                onEditPost={(postId) => handleEditPost(postId)}
+                isDeleting={deletingPostId === post.id}
+                onHidePost={() => handleHidePost(post.id)}
+                onBlock={null}
+                onReportPost={null}
+                onSavePost={null}
+                onAddComment={null}
+                onDeleteComment={null}
+                comments={[]}
+                onLoadComments={() => {}}
+                isSharedPost={false}
+              />
+            </div>
+          );
+        })
+      )}
+
       {/* Timeline Posts from API */}
       {timelinePosts && timelinePosts.length > 0 ? (
         timelinePosts.map((post, idx) => {
@@ -906,6 +989,7 @@ const Feeds = ({ userId }) => {
                 commentsCount={0}
                 isUserPost={true} // Add flag to identify user posts
                 isOwnPost={post.ownPost || false}
+                status={post.status || null}
                 onUnfollow={() => {
                   handleUnfollow(post.user_id, 'user');
                 }}

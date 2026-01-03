@@ -21,6 +21,12 @@ export default defineConfig({
     chunkSizeWarningLimit: 3000,
   },
   server: {
+    host: '0.0.0.0',
+    port: 5173,
+    watch: {
+      usePolling: true,
+      interval: 1000
+    },
     allowedHosts: [
       'islamicwindows.loigin.com'
     ]

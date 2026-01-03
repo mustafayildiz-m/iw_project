@@ -527,7 +527,7 @@ const CreatePostCard = () => {
 
 
   return <>
-    <Card className="card-body shadow-sm border-0">
+    <Card className="shadow-sm border-0" style={{ padding: '1rem', marginBottom: '1.5rem' }}>
       <div className="d-flex mb-3">
         <div className="me-3" style={{ flexShrink: 0 }}>
           <span role="button">
@@ -597,8 +597,8 @@ const CreatePostCard = () => {
         </div>
       </div>
 
-      <div className="d-flex justify-content-between align-items-center">
-        <ul className="nav nav-pills nav-stack small fw-normal">
+      <div className="d-flex justify-content-between align-items-center mt-2">
+        <ul className="nav nav-pills nav-stack small fw-normal mb-0">
           <li className="nav-item">
             <a className="nav-link bg-light py-1 px-2 mb-0" onClick={togglePhotoModel} style={{ cursor: 'pointer' }}>
               {' '}

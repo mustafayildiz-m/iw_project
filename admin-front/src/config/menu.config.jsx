@@ -184,6 +184,7 @@ export const MENU_SIDEBAR = [
       { title: 'Yöneticiler', path: '/kullanicilar/yoneticiler', status: 'done' },
       { title: 'Editörler', path: '/kullanicilar/editorler', status: 'done' },
       { title: 'Bireysel Kullanıcılar', path: '/kullanicilar/bireysel', status: 'done' },
+      { title: 'Onay Bekleyen Postlar', path: '/kullanicilar/post-onaylama', status: 'done' },
     ],
   },
   {

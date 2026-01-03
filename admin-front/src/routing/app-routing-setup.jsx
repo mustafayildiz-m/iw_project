@@ -28,6 +28,7 @@ import EditPodcast from '@/pages/podcast/duzenle/[id]';
 import YoneticilerPage from '@/pages/kullanicilar/yoneticiler';
 import EditorlerPage from '@/pages/kullanicilar/editorler';
 import BireyselKullanicilarPage from '@/pages/kullanicilar/bireysel';
+import PostOnaylamaPage from '@/pages/kullanicilar/post-onaylama';
 import {
   CampaignsCardPage,
   CampaignsListPage,
@@ -91,6 +92,7 @@ export function AppRoutingSetup() {
           <Route path="/kullanicilar/yoneticiler" element={<YoneticilerPage />} />
           <Route path="/kullanicilar/editorler" element={<EditorlerPage />} />
           <Route path="/kullanicilar/bireysel" element={<BireyselKullanicilarPage />} />
+          <Route path="/kullanicilar/post-onaylama" element={<PostOnaylamaPage />} />
         </Route>
       </Route>
       <Route path="error/*" element={<ErrorRouting />} />

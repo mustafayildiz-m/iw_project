@@ -1,6 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 
+export enum PostStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+}
+
 @Entity('user_posts')
 export class UserPost {
   @PrimaryGeneratedColumn()
@@ -35,6 +41,16 @@ export class UserPost {
 
   @Column({ nullable: true })
   shared_article_id: number;
+
+  @Column({
+    type: 'enum',
+    enum: PostStatus,
+    default: PostStatus.PENDING,
+  })
+  status: PostStatus;
+
+  @Column({ nullable: true })
+  approved_by: number; // Admin user id who approved/rejected
 
   @CreateDateColumn()
   created_at: Date;

@@ -195,7 +195,8 @@ const PostCard = ({
   isSharedPost = false,
   originalUser = null,
   translations = null,  // Yeni prop: Scholar post translations
-  onLanguageChange = null  // Callback: Dil değiştiğinde
+  onLanguageChange = null,  // Callback: Dil değiştiğinde
+  status = null  // Post status: 'pending', 'approved', 'rejected'
 }) => {
   const { t, locale } = useLanguage();
   const { showNotification } = useNotificationContext();
@@ -645,7 +646,7 @@ const PostCard = ({
 
             <div>
               <div className="nav nav-divider">
-                <h6 className="nav-item card-title mb-0">
+                <h6 className="nav-item card-title mb-0 d-flex align-items-center gap-2">
                   {' '}
                   {socialUser?.id ? (
                     <Link
@@ -657,6 +658,11 @@ const PostCard = ({
                   ) : (
                     <span className="text-decoration-none">
                       {isUserPost ? (socialUser?.name || t('post.userRole')) : (socialUser?.fullName || t('post.scholarRole'))}
+                    </span>
+                  )}
+                  {status === 'pending' && isOwnPost && (
+                    <span className="badge bg-warning text-dark" style={{ fontSize: '0.7rem' }}>
+                      {t('feed.postPending')}
                     </span>
                   )}
                 </h6>

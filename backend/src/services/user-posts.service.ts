@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { UserPost } from '../entities/user-post.entity';
+import { UserPost, PostStatus } from '../entities/user-post.entity';
 import { CreateUserPostDto } from '../dto/user-posts/create-user-post.dto';
 import { UpdateUserPostDto } from '../dto/user-posts/update-user-post.dto';
 import { UserFollow } from '../entities/user-follow.entity';
@@ -36,7 +36,10 @@ export class UserPostsService {
   ) {}
 
   async create(createUserPostDto: CreateUserPostDto) {
-    const post = this.userPostRepository.create(createUserPostDto);
+    const post = this.userPostRepository.create({
+      ...createUserPostDto,
+      status: PostStatus.PENDING, // Default olarak pending
+    });
     const savedPost = await this.userPostRepository.save(post);
     
     // Cache'i temizle - kullanıcının kendi timeline'ı ve onu takip edenlerin timeline'ları
@@ -106,17 +109,17 @@ export class UserPostsService {
     // Her bir user ID için ayrı ayrı post al ve birleştir
     let allUserPosts: UserPost[] = [];
     
-    // Kullanıcının kendi postlarını al
+    // Kullanıcının kendi postlarını al - sadece approved olanları göster
     const ownPosts = await this.userPostRepository.find({
-      where: { user_id: userId },
+      where: { user_id: userId, status: PostStatus.APPROVED },
       order: { created_at: 'DESC' },
     });
     allUserPosts.push(...ownPosts);
     
-    // Takip edilen kullanıcıların postlarını al
+    // Takip edilen kullanıcıların postlarını al - sadece approved olanları göster
     for (const followId of followingIds) {
       const followPosts = await this.userPostRepository.find({
-        where: { user_id: followId },
+        where: { user_id: followId, status: PostStatus.APPROVED },
         order: { created_at: 'DESC' },
       });
       allUserPosts.push(...followPosts);
@@ -149,7 +152,7 @@ export class UserPostsService {
     for (const share of sharedPosts) {
       if (share.post_type === 'user') {
         const originalPost = await this.userPostRepository.findOne({
-          where: { id: Number(share.post_id) },
+          where: { id: Number(share.post_id), status: PostStatus.APPROVED },
           relations: ['user']
         });
         if (originalPost) {
@@ -321,9 +324,18 @@ export class UserPostsService {
     return allPosts;
   }
 
-  async getUserPosts(userId: number) {
+  async getUserPosts(userId: number, includePending: boolean = false) {
+    const whereCondition: any = { user_id: userId };
+    
+    // Eğer kullanıcı kendi postlarını görüyorsa, pending olanları da dahil et
+    if (includePending) {
+      whereCondition.status = In([PostStatus.APPROVED, PostStatus.PENDING]);
+    } else {
+      whereCondition.status = PostStatus.APPROVED;
+    }
+    
     const posts = await this.userPostRepository.find({
-      where: { user_id: userId },
+      where: whereCondition,
       order: { created_at: 'DESC' },
     });
 
@@ -361,6 +373,7 @@ export class UserPostsService {
       created_at: post.created_at,
       updated_at: post.updated_at,
       timeAgo: getTimeAgo(post.created_at),
+      status: post.status, // Status bilgisini de ekle
       // Kullanıcı bilgileri
       user_name: user ? `${user.firstName} ${user.lastName}` : null,
       user_username: user ? user.username : null,
@@ -418,6 +431,42 @@ export class UserPostsService {
     }
     
     throw new NotFoundException('Invalid profile type');
+  }
+
+  async approvePost(postId: number, adminUserId: number) {
+    const post = await this.userPostRepository.findOneBy({ id: postId });
+    if (!post) throw new NotFoundException('Post not found');
+    
+    post.status = PostStatus.APPROVED;
+    post.approved_by = adminUserId;
+    const updatedPost = await this.userPostRepository.save(post);
+    
+    // Cache'i temizle
+    await this.clearTimelineCacheForUser(updatedPost.user_id);
+    
+    return updatedPost;
+  }
+
+  async rejectPost(postId: number, adminUserId: number) {
+    const post = await this.userPostRepository.findOneBy({ id: postId });
+    if (!post) throw new NotFoundException('Post not found');
+    
+    post.status = PostStatus.REJECTED;
+    post.approved_by = adminUserId;
+    const updatedPost = await this.userPostRepository.save(post);
+    
+    // Cache'i temizle
+    await this.clearTimelineCacheForUser(updatedPost.user_id);
+    
+    return updatedPost;
+  }
+
+  async getPendingPosts() {
+    return this.userPostRepository.find({
+      where: { status: PostStatus.PENDING },
+      relations: ['user'],
+      order: { created_at: 'DESC' },
+    });
   }
 
   /**

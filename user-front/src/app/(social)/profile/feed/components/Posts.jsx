@@ -628,6 +628,7 @@ const Posts = ({ userId, showOwnPosts = false }) => {
               commentsCount={0} // API doesn't provide this yet
               isUserPost={true}
               isOwnPost={post.ownPost || false}
+              status={post.status || null}
               onUnfollow={() => handleUnfollow(post.user_id, 'user')}
               onDeletePost={(postId) => handleDeletePost(postId)}
               onEditPost={(postId) => handleEditPost(postId)}
