@@ -99,15 +99,24 @@ services:
   user-front:
     build:
       context: ./user-front
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: islamic_windows_user_front
     environment:
-      NODE_ENV: ${NODE_ENV:-production}
+      NODE_ENV: development
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
       NEXT_PUBLIC_ADMIN_URL: ${NEXT_PUBLIC_ADMIN_URL:-http://localhost:5173}
       BACKEND_API_URL: http://backend:3000  # Server-side için Docker network içinden backend'e erişim
+      WATCHPACK_POLLING: true
+      CHOKIDAR_USEPOLLING: true
+    volumes:
+      - ./user-front:/app
+      - /app/node_modules
+      - /app/.next
     ports:
       - "${USER_FRONT_PORT:-3001}:3001"
+    command: npm run dev
+    stdin_open: true
+    tty: true
     depends_on:
       - backend
     restart: unless-stopped
