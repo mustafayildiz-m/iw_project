@@ -44,10 +44,10 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: islamic_windows_backend
     environment:
-      NODE_ENV: ${NODE_ENV:-production}
+      NODE_ENV: ${NODE_ENV:-development}
       PORT: ${BACKEND_PORT:-3000}
       DB_HOST: mysql
       DB_PORT: 3306
@@ -60,6 +60,8 @@ services:
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     volumes:
+      - ./backend:/app
+      - /app/node_modules
       - ./backend/uploads:/app/uploads
     depends_on:
       mysql:
@@ -69,6 +71,8 @@ services:
     restart: unless-stopped
     networks:
       - islamic_windows_network
+    stdin_open: true
+    tty: true
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || curl -f http://localhost:3000/health || exit 1"]
       interval: 30s

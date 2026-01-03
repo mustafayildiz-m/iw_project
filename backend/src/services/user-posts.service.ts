@@ -59,8 +59,21 @@ export class UserPostsService {
   async update(id: number, updateUserPostDto: UpdateUserPostDto) {
     const post = await this.userPostRepository.findOneBy({ id });
     if (!post) throw new NotFoundException('Post not found');
-    Object.assign(post, updateUserPostDto);
-    const updatedPost = await this.userPostRepository.save(post);
+    
+    // DTO'dan status ve approved_by alanlarını çıkar (güvenlik için)
+    const { status, approved_by, ...updateData } = updateUserPostDto as any;
+    
+    // Post güncellendiğinde tekrar onaya gitmesi için status'u pending yap
+    // repository.update kullanarak doğrudan veritabanında güncelle
+    await this.userPostRepository.update(id, {
+      ...updateData,
+      status: PostStatus.PENDING, // Her zaman pending yap
+      approved_by: null, // Onaylayan admin bilgisini temizle
+    });
+    
+    // Güncellenmiş post'u tekrar çek
+    const updatedPost = await this.userPostRepository.findOneBy({ id });
+    if (!updatedPost) throw new NotFoundException('Post not found after update');
     
     // Cache'i temizle
     await this.clearTimelineCacheForUser(updatedPost.user_id);

@@ -228,6 +228,82 @@ const Feeds = ({ userId }) => {
     fetchPendingPosts();
   }, [userId]);
 
+  // Listen for post creation events and add to pending posts immediately
+  useEffect(() => {
+    const handlePostCreated = async (event) => {
+      if (event.detail && event.detail.post) {
+        const newPost = event.detail.post;
+        
+        // If post has status pending or no status (defaults to pending), add to pending posts
+        if (!newPost.status || newPost.status === 'pending') {
+          // Create pending post object with proper structure
+          const pendingPost = {
+            id: newPost.id || Date.now(),
+            user_id: newPost.user_id || userId,
+            content: newPost.content,
+            title: newPost.title || null,
+            image_url: newPost.image_url || null,
+            video_url: newPost.video_url || null,
+            status: 'pending',
+            created_at: newPost.created_at || new Date().toISOString(),
+            timeAgo: 'Şimdi',
+            user_name: newPost.user_name || 'Sen',
+            user_username: newPost.user_username,
+            user_photo_url: newPost.user_photo_url,
+          };
+          
+          // Add to pending posts immediately
+          setPendingPosts(prev => {
+            // Check if post already exists (avoid duplicates)
+            const exists = prev.some(p => p.id === pendingPost.id);
+            if (exists) return prev;
+            return [pendingPost, ...prev];
+          });
+        }
+        
+        // Also refresh pending posts from server after a short delay to get the real post data
+        setTimeout(() => {
+          const fetchPendingPosts = async () => {
+            if (!userId) return;
+            
+            try {
+              const token = localStorage.getItem('token');
+              if (!token) return;
+
+              const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/user-posts/user/${userId}`,
+                {
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+
+              if (response.ok) {
+                const data = await response.json();
+                const pending = data.filter(post => post.status === 'pending');
+                setPendingPosts(pending);
+              }
+            } catch (error) {
+              console.error('Error refreshing pending posts:', error);
+            }
+          };
+          
+          fetchPendingPosts();
+        }, 1500); // Wait 1.5 seconds for server to process
+      }
+    };
+
+    // Add event listener for post creation
+    window.addEventListener('postCreated', handlePostCreated);
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener('postCreated', handlePostCreated);
+    };
+  }, [userId]);
+
   // Handler functions for post actions
   const handleUnfollow = async (userIdToUnfollow, userType = 'user') => {
     // Store the action details and show confirmation dialog
@@ -743,9 +819,45 @@ const Feeds = ({ userId }) => {
 
 
       if (response.ok) {
-        // Close modal and refresh timeline
+        const updatedPost = await response.json();
+        
+        // Post güncellendiğinde status pending olduğu için timeline'dan kaldır
+        removePost(editingPost.id);
+        
+        // Güncellenmiş post'u pending posts listesine ekle
+        if (updatedPost.status === 'pending') {
+          // Post verisini pending posts formatına çevir
+          const pendingPost = {
+            id: updatedPost.id,
+            user_id: updatedPost.user_id,
+            content: updatedPost.content,
+            title: updatedPost.title || null,
+            image_url: updatedPost.image_url || null,
+            video_url: updatedPost.video_url || null,
+            status: 'pending',
+            created_at: updatedPost.created_at || new Date().toISOString(),
+            timeAgo: 'Şimdi',
+            user_name: updatedPost.user_name || timelinePosts.find(p => p.id === editingPost.id)?.user_name || 'Sen',
+            user_username: updatedPost.user_username || timelinePosts.find(p => p.id === editingPost.id)?.user_username,
+            user_photo_url: updatedPost.user_photo_url || timelinePosts.find(p => p.id === editingPost.id)?.user_photo_url,
+          };
+          
+          // Pending posts listesine ekle (duplicate kontrolü ile)
+          setPendingPosts(prev => {
+            const exists = prev.some(p => p.id === pendingPost.id);
+            if (exists) {
+              // Eğer zaten varsa, güncelle
+              return prev.map(p => p.id === pendingPost.id ? pendingPost : p);
+            }
+            return [pendingPost, ...prev];
+          });
+        }
+        
+        // Close modal
         setShowEditModal(false);
         setEditingPost(null);
+        
+        // Timeline'ı da güncelle (pending post'lar timeline'da görünmeyecek)
         refetch();
       } else {
         // console.error('Failed to update post:', response.status, response.statusText);

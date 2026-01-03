@@ -315,7 +315,6 @@ const CreatePostCard = () => {
         privacy
       });
 
-
       // Show success notification
       showNotification({
         title: t('common.success'),
@@ -328,21 +327,25 @@ const CreatePostCard = () => {
       resetFormAndCloseModals();
 
       // Create a more detailed event with post data for immediate UI update
+      // Use the actual post data from API response
       const postCreatedEvent = new CustomEvent('postCreated', {
         detail: {
           post: {
-            id: Date.now(), // Temporary ID until we get real one from API
-            type: 'user',
-            user_id: null, // Will be filled by the hook
-            content: postContent,
-            title: null,
-            image_url: imageUrl ? URL.createObjectURL(imageUrl) : null,
-            video_url: videoUrl ? URL.createObjectURL(videoUrl) : null,
-            created_at: new Date().toISOString(),
+            id: result.id || Date.now(),
+            type: result.type || 'user',
+            user_id: result.user_id || userInfo?.id,
+            content: result.content || postContent,
+            title: result.title || null,
+            image_url: result.image_url || (imageUrl ? URL.createObjectURL(imageUrl) : null),
+            video_url: result.video_url || (videoUrl ? URL.createObjectURL(videoUrl) : null),
+            status: result.status || 'pending', // API'den dönen status
+            created_at: result.created_at || new Date().toISOString(),
             timeAgo: 'Şimdi',
-            user_name: 'Sen', // Will be replaced with actual user data
-            user_username: null,
-            user_photo_url: null,
+            user_name: profileData?.firstName && profileData?.lastName 
+              ? `${profileData.firstName} ${profileData.lastName}` 
+              : profileData?.username || userInfo?.username || 'Sen',
+            user_username: profileData?.username || userInfo?.username,
+            user_photo_url: profileData?.photoUrl || profileData?.photo_url || getUserAvatar(),
             is_own_post: true
           },
           timestamp: Date.now()
