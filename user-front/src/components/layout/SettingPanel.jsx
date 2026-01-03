@@ -1,7 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
-import Image from 'next/image';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/context/useLanguageContext';
@@ -40,9 +40,9 @@ const SettingPanel = ({
   }, []);
 
   return (
-    <div 
-      className="w-100" 
-      style={{ 
+    <div
+      className="w-100"
+      style={{
         background: 'white',
         borderRadius: '16px',
         padding: '1.25rem',
@@ -50,9 +50,9 @@ const SettingPanel = ({
         border: 'none'
       }}
     >
-      <ul 
-        className="nav flex-column fw-bold" 
-        style={{ 
+      <ul
+        className="nav flex-column fw-bold"
+        style={{
           gap: '0.25rem',
           listStyle: 'none',
           padding: 0,
@@ -61,16 +61,16 @@ const SettingPanel = ({
       >
         {links.map((item, idx) => (
           <li key={idx} style={{ margin: 0 }}>
-            <Link 
+            <Link
               className={clsx('d-flex align-items-center text-decoration-none', {
                 'text-white': pathName === item.link
-              })} 
+              })}
               href={item.link}
               style={{
                 borderRadius: '10px',
                 padding: '0.75rem 1rem',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                background: pathName === item.link 
+                background: pathName === item.link
                   ? 'linear-gradient(135deg, #81C784 0%, #66BB6A 100%)'
                   : 'transparent',
                 color: pathName === item.link ? 'white' : '#2C3E50',
@@ -89,13 +89,13 @@ const SettingPanel = ({
                 }
               }}
             >
-              <Image 
-                height={20} 
-                width={19} 
-                className="me-2" 
-                src={item.image} 
+              <img
+                height={20}
+                width={19}
+                className="me-2"
+                src={item.image}
                 alt="image"
-                style={{ 
+                style={{
                   filter: pathName === item.link ? 'brightness(0) invert(1)' : 'none'
                 }}
               />
@@ -103,10 +103,10 @@ const SettingPanel = ({
             </Link>
           </li>
         ))}
-        
+
         <li style={{ margin: 0, marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #F1F8F4' }}>
-          <Link 
-            href={userId ? `/profile/user/${userId}/feed` : '/profile/feed'} 
+          <Link
+            href={userId ? `/profile/user/${userId}/feed` : '/profile/feed'}
             className="d-flex align-items-center text-decoration-none"
             style={{
               borderRadius: '10px',
@@ -127,7 +127,7 @@ const SettingPanel = ({
           >
             <span className="me-2" style={{ width: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
               </svg>
             </span>
             <span>{t('menu.viewProfile')}</span>

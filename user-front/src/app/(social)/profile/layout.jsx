@@ -1008,7 +1008,7 @@ const ProfileLayout = ({
                           height={120}
                           style={{ objectFit: 'cover' }}
                           onError={(e) => {
-                            e.target.src = typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
+                            e.target.src = typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
                           }}
                         />
                         {isOwnProfile() && (
@@ -1305,7 +1305,7 @@ const ProfileLayout = ({
                       className="rounded-3 w-100"
                       style={{ maxHeight: '500px', objectFit: 'contain', width: '100%' }}
                       onError={(e) => {
-                        e.target.src = typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
+                        e.target.src = typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
                       }}
                     />
                   </div>
@@ -1356,7 +1356,7 @@ const ProfileLayout = ({
                         height={120}
                         style={{ objectFit: 'cover' }}
                         onError={(e) => {
-                          e.target.src = typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
+                          e.target.src = typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
                         }}
                       />
                     </div>

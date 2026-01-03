@@ -17,81 +17,83 @@ import chatAltImg from '@/assets/images/icon/chat-alt-outline-filled.svg';
 import trashImg from '@/assets/images/icon/trash-var-outline-filled.svg';
 import clipboardImg from '@/assets/images/icon/clipboard-list-outline-filled.svg';
 import microphoneImg from '@/assets/images/icon/chat-alt-outline-filled.svg'; // Geçici olarak chat-alt kullanıyoruz
+
 export const profilePanelLinksData1 = [{
-  image: homeImg,
+  image: typeof homeImg === 'string' ? homeImg : homeImg.src,
   nameKey: 'menu.feed',
   link: '/profile/feed'
-},{
-  image: earthImg,
+}, {
+  image: typeof earthImg === 'string' ? earthImg : earthImg.src,
   nameKey: 'menu.worldNews',
   link: '/blogs'
 }, {
-  image: bookOpenImg,
+  image: typeof bookOpenImg === 'string' ? bookOpenImg : bookOpenImg.src,
   nameKey: 'menu.islamicScholars',
   link: '/feed/scholars'
-},{
-  image: personImg,
+}, {
+  image: typeof personImg === 'string' ? personImg : personImg.src,
   nameKey: 'menu.users',
   link: '/feed/who-to-follow'
-},   {
-  image: bookImg,
+}, {
+  image: typeof bookImg === 'string' ? bookImg : bookImg.src,
   nameKey: 'menu.books',
   link: '/feed/books'
 }, {
-  image: clipboardImg,
+  image: typeof clipboardImg === 'string' ? clipboardImg : clipboardImg.src,
   nameKey: 'menu.articles',
   link: '/feed/articles'
 }, {
-  image: microphoneImg,
+  image: typeof microphoneImg === 'string' ? microphoneImg : microphoneImg.src,
   nameKey: 'menu.podcast',
   link: '/feed/podcasts'
 }, {
-  image: cogImg,
+  image: typeof cogImg === 'string' ? cogImg : cogImg.src,
   nameKey: 'menu.settings',
   link: '/settings/account'
 }];
+
 export const profilePanelLinksData2 = [{
-  image: homeImg,
+  image: typeof homeImg === 'string' ? homeImg : homeImg.src,
   name: 'Akış',
   link: '/profile/feed'
 }, {
-  image: medalImg,
+  image: typeof medalImg === 'string' ? medalImg : medalImg.src,
   name: 'Popüler',
   link: ''
 }, {
-  image: clockImg,
+  image: typeof clockImg === 'string' ? clockImg : clockImg.src,
   name: 'Yakın zamanda',
   link: ''
 }, {
-  image: likeImg,
+  image: typeof likeImg === 'string' ? likeImg : likeImg.src,
   name: 'Abonelikler',
   link: ''
 }, {
-  image: starImg,
+  image: typeof starImg === 'string' ? starImg : starImg.src,
   name: 'Favorilerim',
   link: ''
 }, {
-  image: taskDoneImg,
+  image: typeof taskDoneImg === 'string' ? taskDoneImg : taskDoneImg.src,
   name: 'Favori Listesi',
   link: ''
 }, {
-  image: notificationImg,
+  image: typeof notificationImg === 'string' ? notificationImg : notificationImg.src,
   name: 'Bildirimler',
   link: '/notifications'
 }, {
-  image: cogImg,
+  image: typeof cogImg === 'string' ? cogImg : cogImg.src,
   name: 'Ayarlar',
   link: '/settings/account'
 }, {
-  image: arrowBoxedImg,
+  image: typeof arrowBoxedImg === 'string' ? arrowBoxedImg : arrowBoxedImg.src,
   name: 'Çıkış yap',
   link: '/auth/sign-in'
 }];
 export const settingPanelLinksData = [{
-  image: personImg,
+  image: typeof personImg === 'string' ? personImg : personImg.src,
   nameKey: 'menu.account',
   link: '/settings/account'
-}, 
+},
 // {
 //   image: notificationImg,
 //   nameKey: 'menu.notifications',
@@ -110,7 +112,7 @@ export const settingPanelLinksData = [{
 //   link: '/settings/messaging'
 // }, 
 {
-  image: trashImg,
+  image: typeof trashImg === 'string' ? trashImg : trashImg.src,
   nameKey: 'menu.closeAccount',
   link: '/settings/close-account'
 }];

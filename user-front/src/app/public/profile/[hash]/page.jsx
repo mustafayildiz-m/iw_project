@@ -144,7 +144,7 @@ const translations = {
 const PublicProfilePage = () => {
   const params = useParams();
   const { hash } = params;
-  
+
   const [profileData, setProfileData] = useState(null);
   const [profileInfo, setProfileInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -172,7 +172,7 @@ const PublicProfilePage = () => {
 
         // Decode hash to get type and id
         const decoded = decodeProfileId(hash);
-        
+
         if (!decoded) {
           setError(t('invalidLink'));
           setLoading(false);
@@ -229,19 +229,19 @@ const PublicProfilePage = () => {
 
   const getProfileDisplayName = () => {
     if (!profileData) return '';
-    
+
     if (profileInfo?.type === 'scholar') {
       return profileData.fullName || 'Scholar';
     } else {
-      return profileData.firstName && profileData.lastName 
-        ? `${profileData.firstName} ${profileData.lastName}` 
+      return profileData.firstName && profileData.lastName
+        ? `${profileData.firstName} ${profileData.lastName}`
         : profileData.name || profileData.fullName || 'User';
     }
   };
 
   const getProfileLocation = () => {
     if (!profileData) return t('notSpecified');
-    
+
     if (profileInfo?.type === 'scholar') {
       return profileData.locationName || t('notSpecified');
     } else {
@@ -251,7 +251,7 @@ const PublicProfilePage = () => {
 
   const getProfileBio = () => {
     if (!profileData) return t('noBiographyAvailable');
-    
+
     if (profileInfo?.type === 'scholar') {
       return profileData.biography || t('noBiographyAvailableForScholar');
     } else {
@@ -261,7 +261,7 @@ const PublicProfilePage = () => {
 
   const getProfileDateInfo = () => {
     if (!profileData) return t('notSpecified');
-    
+
     if (profileInfo?.type === 'scholar') {
       return profileData.birthDate ? `${profileData.birthDate} - ${profileData.deathDate || 'Present'}` : t('notSpecified');
     } else {
@@ -271,7 +271,7 @@ const PublicProfilePage = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return t('notSpecified');
-    
+
     try {
       const date = new Date(dateString);
       const localeMap = {
@@ -328,7 +328,7 @@ const PublicProfilePage = () => {
   }
 
   const isRTL = language === 'ar';
-  
+
   return (
     <div className={`min-vh-100 bg-light ${isRTL ? 'rtl' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
@@ -376,8 +376,8 @@ const PublicProfilePage = () => {
           <Col lg={8}>
             <Card className="shadow-sm">
               {/* Cover Image */}
-              <div 
-                className="h-200px rounded-top" 
+              <div
+                className="h-200px rounded-top"
                 style={{
                   backgroundImage: `url(${profileData?.coverImage ? getImageUrl(profileData.coverImage) : background5.src})`,
                   backgroundPosition: 'center',
@@ -391,21 +391,21 @@ const PublicProfilePage = () => {
                   <div>
                     <div className="position-relative d-inline-block">
                       <div className="avatar avatar-xxl mt-n5 mb-3">
-                        <img 
-                          className="avatar-img rounded-circle border border-white border-3" 
-                          src={getImageUrl(profileData?.photoUrl || profileData?.photo_url)} 
-                          alt="avatar" 
+                        <img
+                          className="avatar-img rounded-circle border border-white border-3"
+                          src={getImageUrl(profileData?.photoUrl || profileData?.photo_url)}
+                          alt="avatar"
                           width={120}
                           height={120}
                           style={{ objectFit: 'cover' }}
                           onError={(e) => {
-                            e.target.src = typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
+                            e.target.src = typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
                           }}
                         />
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="ms-sm-4 mt-sm-3 flex-grow-1">
                     <h1 className="mb-0 h5">
                       {getProfileDisplayName()}
@@ -414,7 +414,7 @@ const PublicProfilePage = () => {
                     <p className="text-muted mb-2">
                       {profileInfo?.type === 'scholar' ? t('scholar') : t('user')}
                     </p>
-                    
+
                     <div className="d-flex flex-wrap gap-3 small text-muted">
                       <div className="d-flex align-items-center">
                         <BsGeoAlt className="me-1" />
@@ -428,8 +428,8 @@ const PublicProfilePage = () => {
                   </div>
 
                   <div className="ms-auto mt-3">
-                    <Button 
-                      variant="primary" 
+                    <Button
+                      variant="primary"
                       size="sm"
                       onClick={() => window.open('/', '_blank')}
                     >
@@ -445,7 +445,7 @@ const PublicProfilePage = () => {
                     <BsPersonFill className="me-2 text-primary" />
                     {t('biography')}
                   </h6>
-                  <div 
+                  <div
                     className="text-muted"
                     dangerouslySetInnerHTML={{ __html: getProfileBio() }}
                   />
@@ -461,15 +461,15 @@ const PublicProfilePage = () => {
                   {t('joinDescription')}
                 </p>
                 <div className="d-flex gap-2 justify-content-center">
-                  <Button 
-                    variant="primary" 
+                  <Button
+                    variant="primary"
                     size="lg"
                     onClick={() => window.open('/', '_blank')}
                   >
                     {t('signUpNow')}
                   </Button>
-                  <Button 
-                    variant="outline-primary" 
+                  <Button
+                    variant="outline-primary"
                     size="lg"
                     onClick={() => window.open('/', '_blank')}
                   >

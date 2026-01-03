@@ -222,8 +222,11 @@ const PostCard = ({
         });
 
         if (response.ok) {
-          const data = await response.json();
-          setCurrentUserProfile(data);
+          const text = await response.text();
+          if (text) {
+            const data = JSON.parse(text);
+            setCurrentUserProfile(data);
+          }
         }
       } catch (error) {
         console.error('Error fetching current user profile:', error);
@@ -626,7 +629,7 @@ const PostCard = ({
                     if (process.env.NODE_ENV === 'development') {
                       // console.error('Avatar failed to load:', e.target.src);
                     }
-                    e.target.src = typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
+                    e.target.src = typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'scale(1.08)';

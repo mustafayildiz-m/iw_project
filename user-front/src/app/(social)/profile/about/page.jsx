@@ -24,7 +24,7 @@ const Interests = () => {
             <Col sm={6} lg={4} key={idx}>
               <div className="d-flex align-items-center position-relative border border-1 rounded p-2">
                 <div className="avatar">
-                  <Image className="avatar-img" src={item.image} alt="image" />
+                  <img className="avatar-img" src={item.image} alt="image" />
                 </div>
                 <div className="ms-2">
                   <h6 className="mb-0">

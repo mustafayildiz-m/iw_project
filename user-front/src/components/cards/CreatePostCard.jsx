@@ -32,17 +32,17 @@ const CreatePostCard = () => {
   const { createPost, uploadFile, loading, error } = useCreatePost();
   const { showNotification } = useNotificationContext();
   const { userInfo, isAuthenticated } = useAuthContext();
-  
+
   // Post content state
   const [postContent, setPostContent] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [privacy, setPrivacy] = useState('public');
-  
+
   // User profile data state
   const [profileData, setProfileData] = useState(null);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageKey, setImageKey] = useState(0);
-  
+
   // Memoize file URLs to prevent recreation on every render
   const filePreviewUrls = useMemo(() => {
     return selectedFiles.map(file => ({
@@ -50,57 +50,57 @@ const CreatePostCard = () => {
       url: URL.createObjectURL(file)
     }));
   }, [selectedFiles]);
-  
+
   // Cleanup URLs when component unmounts or files change
   useEffect(() => {
     return () => {
       filePreviewUrls.forEach(({ url }) => URL.revokeObjectURL(url));
     };
   }, [filePreviewUrls]);
-  
+
   // Get user's profile picture or use default
   const getUserAvatar = () => {
-    
+
     // First try to use the actual profile picture from API
     if (profileData?.photoUrl || profileData?.photo_url) {
       const photoUrl = profileData.photoUrl || profileData.photo_url;
       return photoUrl;
     }
-    
+
     // Fallback to default avatar based on user ID for consistency
     if (userInfo?.id) {
       const userId = parseInt(userInfo.id) || 0;
       const avatarIndex = userId % 7;
       return guests[avatarIndex] || avatar1;
     }
-    
+
     if (userInfo?.username) {
       const usernameHash = userInfo.username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
       const avatarIndex = usernameHash % 7;
       return guests[avatarIndex] || avatar1;
     }
-    
+
     return avatar1;
   };
-  
+
   // Helper function to get proper image URL with cache busting
   const getImageUrl = (photoUrl, bustCache = false) => {
-    
+
     // If photoUrl is null, undefined, or empty, return default avatar
     if (!photoUrl) {
-      return avatar1;
+      return typeof avatar1 === 'string' ? avatar1 : (avatar1?.src || '/images/avatar/default.jpg');
     }
-    
-    // If photoUrl is an object (imported image), return it directly
+
+    // If photoUrl is an object (imported image), return its src property
     if (typeof photoUrl === 'object' && photoUrl.src) {
-      return photoUrl;
+      return photoUrl.src;
     }
-    
+
     // If photoUrl is not a string, return default avatar
     if (typeof photoUrl !== 'string') {
-      return avatar1;
+      return typeof avatar1 === 'string' ? avatar1 : (avatar1?.src || '/images/avatar/default.jpg');
     }
-    
+
     // If it starts with /uploads/, add API base URL
     if (photoUrl.startsWith('/uploads/')) {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -108,7 +108,7 @@ const CreatePostCard = () => {
       const finalUrl = bustCache ? `${url}?t=${Date.now()}` : url;
       return finalUrl;
     }
-    
+
     // If it's already a full URL, add cache busting if needed
     if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
       if (bustCache) {
@@ -117,14 +117,14 @@ const CreatePostCard = () => {
       }
       return photoUrl;
     }
-    
+
     // For any other case, return as is (might be a relative path or imported image path)
     return photoUrl;
   };
-  
+
   // Check authentication on component mount
   useEffect(() => {
-    
+
     if (!isAuthenticated) {
       showNotification({
         title: 'Uyarı',
@@ -133,26 +133,26 @@ const CreatePostCard = () => {
       });
     }
   }, [isAuthenticated, userInfo, showNotification]);
-  
+
   // Fetch user profile data when authenticated
   useEffect(() => {
     let timeoutId = null;
-    
+
     const fetchUserProfile = async () => {
       if (!isAuthenticated || !userInfo?.id) {
         setImageLoading(false); // Stop loading if not authenticated
         return;
       }
-      
+
       try {
         const token = localStorage.getItem('token');
         if (!token) {
           setImageLoading(false);
           return;
         }
-        
+
         setImageLoading(true); // Start loading
-        
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userInfo.id}`, {
           method: 'GET',
           headers: {
@@ -160,7 +160,7 @@ const CreatePostCard = () => {
             'Content-Type': 'application/json'
           }
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           setProfileData(data);
@@ -179,9 +179,9 @@ const CreatePostCard = () => {
         setImageLoading(false); // Stop loading on error
       }
     };
-    
+
     fetchUserProfile();
-    
+
     // Cleanup function
     return () => {
       if (timeoutId) {
@@ -189,18 +189,18 @@ const CreatePostCard = () => {
       }
     };
   }, [isAuthenticated, userInfo?.id]);
-  
+
   // Listen for profile photo updates
   useEffect(() => {
     const handleProfilePhotoUpdate = async () => {
       if (!isAuthenticated || !userInfo?.id) return;
-      
+
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        
+
         setImageLoading(true); // Start loading for updated photo
-        
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userInfo.id}`, {
           method: 'GET',
           headers: {
@@ -208,7 +208,7 @@ const CreatePostCard = () => {
             'Content-Type': 'application/json'
           }
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           setProfileData(data);
@@ -227,7 +227,7 @@ const CreatePostCard = () => {
     window.addEventListener('profilePhotoUpdated', handleProfilePhotoUpdate);
     return () => window.removeEventListener('profilePhotoUpdated', handleProfilePhotoUpdate);
   }, [isAuthenticated, userInfo?.id]);
-  
+
   const {
     isTrue: isOpenPhoto,
     toggle: togglePhotoModel
@@ -244,7 +244,7 @@ const CreatePostCard = () => {
     isTrue: isOpenPost,
     toggle: togglePost
   } = useToggle();
-  
+
   const eventFormSchema = yup.object({
     title: yup.string().required('Lütfen etkinlik başlığını giriniz'),
     description: yup.string().required('Lütfen etkinlik açıklamasını girin'),
@@ -252,7 +252,7 @@ const CreatePostCard = () => {
     location: yup.string().required('Lütfen etkinlik konumunu girin'),
     guest: yup.string().email('Lütfen geçerli bir e-posta girin').required('Lütfen etkinlik konuğu e-postasını girin')
   });
-  
+
   const {
     control,
     handleSubmit
@@ -279,7 +279,7 @@ const CreatePostCard = () => {
   // Handle post submission
   const handlePostSubmit = async () => {
     try {
-      
+
       if (!postContent.trim()) {
         showNotification({
           title: 'Uyarı',
@@ -323,10 +323,10 @@ const CreatePostCard = () => {
         variant: 'success',
         delay: 3000
       });
-      
+
       // Reset form and close modals
       resetFormAndCloseModals();
-      
+
       // Create a more detailed event with post data for immediate UI update
       const postCreatedEvent = new CustomEvent('postCreated', {
         detail: {
@@ -348,10 +348,10 @@ const CreatePostCard = () => {
           timestamp: Date.now()
         }
       });
-      
+
       // Trigger the custom event to refresh posts without full page reload
       window.dispatchEvent(postCreatedEvent);
-      
+
     } catch (err) {
       // console.error('❌ Error creating post:', err);
       // console.error('❌ Error details:', {
@@ -359,7 +359,7 @@ const CreatePostCard = () => {
       //   stack: err.stack,
       //   name: err.name
       // });
-      
+
       showNotification({
         title: t('common.error'),
         message: err.message || t('feed.postError'),
@@ -371,11 +371,11 @@ const CreatePostCard = () => {
   // Handle file selection
   const handleFileSelect = (files) => {
     const fileArray = Array.from(files);
-    
+
     // Validate file sizes
     const validFiles = fileArray.filter(file => {
       const fileSizeMB = file.size / (1024 * 1024);
-      
+
       if (file.type.startsWith('video/') && fileSizeMB > 5) {
         showNotification({
           title: 'Hata!',
@@ -384,7 +384,7 @@ const CreatePostCard = () => {
         });
         return false;
       }
-      
+
       if (file.type.startsWith('image/') && fileSizeMB > 10) {
         showNotification({
           title: 'Hata!',
@@ -393,10 +393,10 @@ const CreatePostCard = () => {
         });
         return false;
       }
-      
+
       return true;
     });
-    
+
     setSelectedFiles(validFiles);
   };
 
@@ -424,8 +424,8 @@ const CreatePostCard = () => {
                 <button
                   type="button"
                   className="btn btn-sm btn-danger rounded-circle position-absolute"
-                  style={{ 
-                    top: '10px', 
+                  style={{
+                    top: '10px',
                     right: '10px',
                     width: '32px',
                     height: '32px',
@@ -440,12 +440,12 @@ const CreatePostCard = () => {
                 >
                   ×
                 </button>
-                
+
                 {/* Video Preview */}
                 {file.type.startsWith('video/') && (
                   <div className="mb-3">
-                    <video 
-                      className="w-100 rounded-3" 
+                    <video
+                      className="w-100 rounded-3"
                       style={{ maxHeight: '250px', objectFit: 'cover' }}
                       controls
                       preload="metadata"
@@ -455,19 +455,19 @@ const CreatePostCard = () => {
                     </video>
                   </div>
                 )}
-                
+
                 {/* Image Preview */}
                 {file.type.startsWith('image/') && (
                   <div className="mb-3">
-                    <img 
+                    <img
                       src={url}
-                      alt="Preview" 
-                      className="w-100 rounded-3" 
+                      alt="Preview"
+                      className="w-100 rounded-3"
                       style={{ maxHeight: '250px', objectFit: 'cover' }}
                     />
                   </div>
                 )}
-                
+
                 <div className="d-flex align-items-center">
                   <div className="icon-shape icon-sm rounded-circle bg-light me-3">
                     {file.type.startsWith('image/') ? (
@@ -500,8 +500,8 @@ const CreatePostCard = () => {
 
   // Loading button component
   const LoadingButton = ({ variant = "success", size = "sm", children, disabled = false, onClick, className = "" }) => (
-    <Button 
-      variant={variant} 
+    <Button
+      variant={variant}
       size={size}
       onClick={onClick}
       disabled={loading || disabled}
@@ -525,105 +525,105 @@ const CreatePostCard = () => {
     </Button>
   );
 
-  
+
   return <>
-      <Card className="card-body shadow-sm border-0">
-        <div className="d-flex mb-3">
-          <div className="me-3" style={{ flexShrink: 0 }}>
-            <span role="button">
-              {imageLoading && (
-                <div 
-                  className="position-absolute top-0 start-0 rounded-circle d-flex align-items-center justify-content-center"
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: '#e9ecef',
-                    zIndex: 2
-                  }}
-                >
-                  <div className="spinner-border text-primary" role="status" style={{ width: '16px', height: '16px' }}>
-                    <span className="visually-hidden">Yükleniyor...</span>
-                  </div>
-                </div>
-              )}
-              <img 
-                className="rounded-circle" 
-                src={getImageUrl(getUserAvatar(), true)} 
-                alt={userInfo?.username || 'User'} 
-                key={`create-post-avatar-${imageKey}`}
-                style={{ 
+    <Card className="card-body shadow-sm border-0">
+      <div className="d-flex mb-3">
+        <div className="me-3" style={{ flexShrink: 0 }}>
+          <span role="button">
+            {imageLoading && (
+              <div
+                className="position-absolute top-0 start-0 rounded-circle d-flex align-items-center justify-content-center"
+                style={{
                   width: '40px',
                   height: '40px',
-                  objectFit: 'cover',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  cursor: 'pointer',
-                  opacity: imageLoading ? 0 : 1
+                  backgroundColor: '#e9ecef',
+                  zIndex: 2
                 }}
-                onLoad={() => {
-                  setImageLoading(false);
-                }}
-                onError={(e) => {
-                  console.error('❌ Image failed to load:', e.target.src);
-                  console.error('Error event:', e);
-                  e.target.src = typeof avatar1 === 'string' ? avatar1 : avatar1.src || avatar1;
-                  setImageLoading(false);
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(181, 231, 160, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              />
-            </span>
-          </div>
-
-          <div className="w-100 d-flex align-items-start gap-2">
-            <form className="flex-grow-1">
-              <textarea 
-                className="form-control pe-4 border-0" 
-                rows={2} 
-                data-autoresize 
-                placeholder={t('feed.shareThoughts')} 
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-                style={{ resize: 'none' }}
-              />
-            </form>
-            
-  
-          </div>
+              >
+                <div className="spinner-border text-primary" role="status" style={{ width: '16px', height: '16px' }}>
+                  <span className="visually-hidden">Yükleniyor...</span>
+                </div>
+              </div>
+            )}
+            <img
+              className="rounded-circle"
+              src={getImageUrl(getUserAvatar(), true)}
+              alt={userInfo?.username || 'User'}
+              key={`create-post-avatar-${imageKey}`}
+              style={{
+                width: '40px',
+                height: '40px',
+                objectFit: 'cover',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                cursor: 'pointer',
+                opacity: imageLoading ? 0 : 1
+              }}
+              onLoad={() => {
+                setImageLoading(false);
+              }}
+              onError={(e) => {
+                console.error('❌ Image failed to load:', e.target.src);
+                console.error('Error event:', e);
+                e.target.src = typeof avatar1 === 'string' ? avatar1 : (avatar1?.src || '/images/avatar/default.jpg');
+                setImageLoading(false);
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(181, 231, 160, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            />
+          </span>
         </div>
 
-        <div className="d-flex justify-content-between align-items-center">
-          <ul className="nav nav-pills nav-stack small fw-normal">
-            <li className="nav-item">
-              <a className="nav-link bg-light py-1 px-2 mb-0" onClick={togglePhotoModel} style={{ cursor: 'pointer' }}>
-                {' '}
-                <BsImageFill size={20} className="text-success pe-2" />
-                {t('post.photo')}
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link bg-light py-1 px-2 mb-0" onClick={toggleVideoModel} style={{ cursor: 'pointer' }}>
-                {' '}
-                <BsCameraReelsFill size={20} className="text-info pe-2" />
-                {t('post.video')}
-              </a>
-            </li>
-            {/* <li className="nav-item">
+        <div className="w-100 d-flex align-items-start gap-2">
+          <form className="flex-grow-1">
+            <textarea
+              className="form-control pe-4 border-0"
+              rows={2}
+              data-autoresize
+              placeholder={t('feed.shareThoughts')}
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+              style={{ resize: 'none' }}
+            />
+          </form>
+
+
+        </div>
+      </div>
+
+      <div className="d-flex justify-content-between align-items-center">
+        <ul className="nav nav-pills nav-stack small fw-normal">
+          <li className="nav-item">
+            <a className="nav-link bg-light py-1 px-2 mb-0" onClick={togglePhotoModel} style={{ cursor: 'pointer' }}>
+              {' '}
+              <BsImageFill size={20} className="text-success pe-2" />
+              {t('post.photo')}
+            </a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link bg-light py-1 px-2 mb-0" onClick={toggleVideoModel} style={{ cursor: 'pointer' }}>
+              {' '}
+              <BsCameraReelsFill size={20} className="text-info pe-2" />
+              {t('post.video')}
+            </a>
+          </li>
+          {/* <li className="nav-item">
               <a className="nav-link bg-light py-1 px-2 mb-0" onClick={toggleEvent} style={{ cursor: 'pointer' }}>
                 {' '}
                 <BsCalendar2EventFill size={20} className="text-danger pe-2" />
                 {t('post.event')}{' '}
               </a>
             </li> */}
-          </ul>
-          
-          <div className="d-flex align-items-center gap-2">
-            {/* <select 
+        </ul>
+
+        <div className="d-flex align-items-center gap-2">
+          {/* <select 
               className="form-select form-select-sm" 
               style={{ width: 'auto' }}
               value={privacy}
@@ -633,386 +633,386 @@ const CreatePostCard = () => {
               <option value="friends">{t('post.privacyFriends')}</option>
               <option value="private">{t('post.privacyPrivate')}</option>
             </select> */}
-            
-            <LoadingButton 
-              onClick={handlePostSubmit}
-              disabled={!postContent.trim()}
-              className="px-3"
+
+          <LoadingButton
+            onClick={handlePostSubmit}
+            disabled={!postContent.trim()}
+            className="px-3"
+          >
+            {t('feed.share')}
+          </LoadingButton>
+        </div>
+      </div>
+    </Card>
+
+    {/* photo */}
+    <Modal
+      show={isOpenPhoto}
+      onHide={togglePhotoModel}
+      centered
+      className="modern-modal"
+      backdrop="static"
+      keyboard={false}
+    >
+      <div className="modal-content border-0 shadow-lg">
+        <ModalHeader closeButton className="border-0 pb-0 position-relative" style={{ zIndex: 1 }}>
+          <div className="d-flex align-items-center">
+            <div className="icon-shape icon-md rounded-circle bg-success bg-opacity-10 text-success me-3">
+              <BsImageFill size={20} />
+            </div>
+            <div>
+              <h5 className="modal-title mb-0 fw-bold">{t('post.addPhoto')}</h5>
+              <small className="text-muted">{t('post.shareWithPhoto')}</small>
+            </div>
+          </div>
+        </ModalHeader>
+        <ModalBody className="pt-2">
+          <div className="d-flex mb-4">
+            <div className="avatar avatar-md me-3 flex-shrink-0">
+              <img
+                className="avatar-img rounded-circle shadow-sm"
+                src={getImageUrl(getUserAvatar())}
+                alt=""
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  objectFit: 'cover',
+                  transition: 'opacity 0.3s ease-in-out'
+                }}
+                onError={(e) => {
+                  e.target.src = typeof avatar1 === 'string' ? avatar1 : (avatar1?.src || '/images/avatar/default.jpg');
+                }}
+              />
+            </div>
+            <div className="flex-grow-1">
+              <textarea
+                className="form-control border-0 shadow-none px-0 fs-6"
+                rows={4}
+                placeholder={t('feed.shareThoughts')}
+                value={postContent}
+                onChange={(e) => setPostContent(e.target.value)}
+                style={{
+                  resize: 'none',
+                  fontSize: '15px',
+                  lineHeight: '1.6',
+                  transition: 'none'
+                }}
+                autoFocus
+              />
+            </div>
+          </div>
+
+          <div className="upload-section p-4 rounded-3 bg-light border border-2 border-dashed position-relative">
+            <label
+              htmlFor="photo-upload"
+              className="d-block text-center mb-0"
+              style={{ cursor: 'pointer' }}
             >
-              {t('feed.share')}
+              <div className="icon-shape icon-xl rounded-circle bg-white shadow-sm mx-auto mb-3">
+                <BsImageFill size={32} className="text-success" />
+              </div>
+              <h6 className="fw-bold mb-2">{t('post.uploadPhoto')}</h6>
+              <small className="text-muted d-block mb-2">
+                Maksimum dosya boyutu: 100MB
+              </small>
+              <small className="text-muted">
+                Desteklenen formatlar: JPG, PNG, GIF, WebP
+              </small>
+              <input
+                id="photo-upload"
+                type="file"
+                className="d-none"
+                accept="image/*"
+                onChange={(e) => handleFileSelect(e.target.files)}
+                multiple
+              />
+            </label>
+          </div>
+
+          {selectedFiles.length > 0 && <FilePreview fileUrls={filePreviewUrls} onRemove={removeFile} />}
+        </ModalBody>
+        <ModalFooter className="border-0 pt-0">
+          <div className="d-flex w-100 gap-2">
+            <button
+              type="button"
+              className="btn btn-light flex-grow-1 py-2"
+              onClick={togglePhotoModel}
+            >
+              {t('post.cancel')}
+            </button>
+            <LoadingButton
+              variant="success"
+              className="flex-grow-1 py-2"
+              onClick={handlePostSubmit}
+            >
+              {t('post.post')}
             </LoadingButton>
           </div>
-        </div>
-      </Card>
+        </ModalFooter>
+      </div>
+    </Modal>
 
-      {/* photo */}
-      <Modal 
-        show={isOpenPhoto} 
-        onHide={togglePhotoModel} 
-        centered 
-        className="modern-modal" 
-        backdrop="static"
-        keyboard={false}
-      >
-        <div className="modal-content border-0 shadow-lg">
-          <ModalHeader closeButton className="border-0 pb-0 position-relative" style={{ zIndex: 1 }}>
-            <div className="d-flex align-items-center">
-              <div className="icon-shape icon-md rounded-circle bg-success bg-opacity-10 text-success me-3">
-                <BsImageFill size={20} />
-              </div>
-              <div>
-                <h5 className="modal-title mb-0 fw-bold">{t('post.addPhoto')}</h5>
-                <small className="text-muted">{t('post.shareWithPhoto')}</small>
-              </div>
+    {/* video */}
+    <Modal
+      show={isOpenVideo}
+      onHide={toggleVideoModel}
+      centered
+      className="modern-modal"
+      backdrop="static"
+      keyboard={false}
+    >
+      <div className="modal-content border-0 shadow-lg">
+        <ModalHeader closeButton className="border-0 pb-0 position-relative" style={{ zIndex: 1 }}>
+          <div className="d-flex align-items-center">
+            <div className="icon-shape icon-md rounded-circle bg-info bg-opacity-10 text-info me-3">
+              <BsCameraReelsFill size={20} />
             </div>
-          </ModalHeader>
-          <ModalBody className="pt-2">
-            <div className="d-flex mb-4">
-              <div className="avatar avatar-md me-3 flex-shrink-0">
-                <img 
-                  className="avatar-img rounded-circle shadow-sm" 
-                  src={getImageUrl(getUserAvatar())} 
-                  alt="" 
-                  style={{ 
-                    width: '48px',
-                    height: '48px',
-                    objectFit: 'cover',
-                    transition: 'opacity 0.3s ease-in-out' 
-                  }}
-                  onError={(e) => {
-                    e.target.src = typeof avatar1 === 'string' ? avatar1 : avatar1.src || avatar1;
-                  }}
-                />
-              </div>
-              <div className="flex-grow-1">
-                <textarea 
-                  className="form-control border-0 shadow-none px-0 fs-6" 
-                  rows={4} 
-                  placeholder={t('feed.shareThoughts')} 
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                  style={{ 
-                    resize: 'none',
-                    fontSize: '15px',
-                    lineHeight: '1.6',
-                    transition: 'none'
-                  }}
-                  autoFocus
-                />
-              </div>
+            <div>
+              <h5 className="modal-title mb-0 fw-bold">{t('post.addVideo')}</h5>
+              <small className="text-muted">{t('post.shareWithVideo')}</small>
             </div>
-            
-            <div className="upload-section p-4 rounded-3 bg-light border border-2 border-dashed position-relative">
-              <label 
-                htmlFor="photo-upload" 
-                className="d-block text-center mb-0"
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="icon-shape icon-xl rounded-circle bg-white shadow-sm mx-auto mb-3">
-                  <BsImageFill size={32} className="text-success" />
-                </div>
-                <h6 className="fw-bold mb-2">{t('post.uploadPhoto')}</h6>
-                <small className="text-muted d-block mb-2">
-                  Maksimum dosya boyutu: 100MB
-                </small>
-                <small className="text-muted">
-                  Desteklenen formatlar: JPG, PNG, GIF, WebP
-                </small>
-                <input 
-                  id="photo-upload"
-                  type="file" 
-                  className="d-none" 
-                  accept="image/*"
-                  onChange={(e) => handleFileSelect(e.target.files)}
-                  multiple
-                />
-              </label>
+          </div>
+        </ModalHeader>
+        <ModalBody className="pt-2">
+          <div className="d-flex mb-4">
+            <div className="avatar avatar-md me-3 flex-shrink-0">
+              <img
+                className="avatar-img rounded-circle shadow-sm"
+                src={getImageUrl(getUserAvatar())}
+                alt=""
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  objectFit: 'cover',
+                  transition: 'opacity 0.3s ease-in-out'
+                }}
+                onError={(e) => {
+                  e.target.src = typeof avatar1 === 'string' ? avatar1 : (avatar1?.src || '/images/avatar/default.jpg');
+                }}
+              />
             </div>
-            
-            {selectedFiles.length > 0 && <FilePreview fileUrls={filePreviewUrls} onRemove={removeFile} />}
-          </ModalBody>
-          <ModalFooter className="border-0 pt-0">
-            <div className="d-flex w-100 gap-2">
-              <button 
-                type="button" 
-                className="btn btn-light flex-grow-1 py-2"
-                onClick={togglePhotoModel}
-              >
-                {t('post.cancel')}
-              </button>
-              <LoadingButton 
-                variant="success" 
-                className="flex-grow-1 py-2"
-                onClick={handlePostSubmit}
-              >
-                {t('post.post')}
-              </LoadingButton>
+            <div className="flex-grow-1">
+              <textarea
+                className="form-control border-0 shadow-none px-0 fs-6"
+                rows={4}
+                placeholder={t('feed.shareThoughts')}
+                value={postContent}
+                onChange={(e) => setPostContent(e.target.value)}
+                style={{
+                  resize: 'none',
+                  fontSize: '15px',
+                  lineHeight: '1.6',
+                  transition: 'none'
+                }}
+                autoFocus
+              />
             </div>
-          </ModalFooter>
-        </div>
-      </Modal>
+          </div>
 
-      {/* video */}
-      <Modal 
-        show={isOpenVideo} 
-        onHide={toggleVideoModel} 
-        centered 
-        className="modern-modal"
-        backdrop="static"
-        keyboard={false}
-      >
-        <div className="modal-content border-0 shadow-lg">
-          <ModalHeader closeButton className="border-0 pb-0 position-relative" style={{ zIndex: 1 }}>
-            <div className="d-flex align-items-center">
-              <div className="icon-shape icon-md rounded-circle bg-info bg-opacity-10 text-info me-3">
-                <BsCameraReelsFill size={20} />
+          <div className="upload-section p-4 rounded-3 bg-light border border-2 border-dashed position-relative">
+            <label
+              htmlFor="video-upload"
+              className="d-block text-center mb-0"
+              style={{ cursor: 'pointer' }}
+            >
+              <div className="icon-shape icon-xl rounded-circle bg-white shadow-sm mx-auto mb-3">
+                <BsCameraReelsFill size={32} className="text-info" />
               </div>
-              <div>
-                <h5 className="modal-title mb-0 fw-bold">{t('post.addVideo')}</h5>
-                <small className="text-muted">{t('post.shareWithVideo')}</small>
-              </div>
-            </div>
-          </ModalHeader>
-          <ModalBody className="pt-2">
-            <div className="d-flex mb-4">
-              <div className="avatar avatar-md me-3 flex-shrink-0">
-                <img 
-                  className="avatar-img rounded-circle shadow-sm" 
-                  src={getImageUrl(getUserAvatar())} 
-                  alt="" 
-                  style={{ 
-                    width: '48px',
-                    height: '48px',
-                    objectFit: 'cover',
-                    transition: 'opacity 0.3s ease-in-out' 
-                  }}
-                  onError={(e) => {
-                    e.target.src = typeof avatar1 === 'string' ? avatar1 : avatar1.src || avatar1;
-                  }}
-                />
-              </div>
-              <div className="flex-grow-1">
-                <textarea 
-                  className="form-control border-0 shadow-none px-0 fs-6" 
-                  rows={4} 
-                  placeholder={t('feed.shareThoughts')} 
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                  style={{ 
-                    resize: 'none',
-                    fontSize: '15px',
-                    lineHeight: '1.6',
-                    transition: 'none'
-                  }}
-                  autoFocus
-                />
-              </div>
-            </div>
-            
-            <div className="upload-section p-4 rounded-3 bg-light border border-2 border-dashed position-relative">
-              <label 
-                htmlFor="video-upload" 
-                className="d-block text-center mb-0"
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="icon-shape icon-xl rounded-circle bg-white shadow-sm mx-auto mb-3">
-                  <BsCameraReelsFill size={32} className="text-info" />
-                </div>
-                <h6 className="fw-bold mb-2">{t('post.uploadVideo')}</h6>
-                <small className="text-muted d-block mb-2">
-                  Maksimum dosya boyutu: 100MB
-                </small>
-                <small className="text-muted">
-                  Desteklenen formatlar: MP4, MOV, AVI, WebM
-                </small>
-                <input 
-                  id="video-upload"
-                  type="file" 
-                  className="d-none" 
-                  accept="video/*"
-                  onChange={(e) => handleFileSelect(e.target.files)}
-                />
-              </label>
-            </div>
-            
-            {selectedFiles.length > 0 && <FilePreview fileUrls={filePreviewUrls} onRemove={removeFile} />}
-          </ModalBody>
-          <ModalFooter className="border-0 pt-0">
-            <div className="d-flex w-100 gap-2">
-              <button 
-                type="button" 
-                className="btn btn-light flex-grow-1 py-2"
-                onClick={toggleVideoModel}
-              >
-                {t('post.cancel')}
-              </button>
-              <LoadingButton 
-                variant="info" 
-                className="flex-grow-1 py-2"
-                onClick={handlePostSubmit}
-              >
-                {t('post.post')}
-              </LoadingButton>
-            </div>
-          </ModalFooter>
-        </div>
-      </Modal>
+              <h6 className="fw-bold mb-2">{t('post.uploadVideo')}</h6>
+              <small className="text-muted d-block mb-2">
+                Maksimum dosya boyutu: 100MB
+              </small>
+              <small className="text-muted">
+                Desteklenen formatlar: MP4, MOV, AVI, WebM
+              </small>
+              <input
+                id="video-upload"
+                type="file"
+                className="d-none"
+                accept="video/*"
+                onChange={(e) => handleFileSelect(e.target.files)}
+              />
+            </label>
+          </div>
 
-      {/* event */}
-      <Modal show={isOpenEvent} onHide={toggleEvent} centered className="fade" id="modalCreateEvents" tabIndex={-1} aria-labelledby="modalLabelCreateEvents" aria-hidden="true">
-        <form onSubmit={handleSubmit(() => {})}>
-          <ModalHeader closeButton>
-            <h5 className="modal-title" id="modalLabelCreateEvents">
-              <BsCalendar2EventFill className="text-danger me-2" />
-              {t('post.createEvent')}
-            </h5>
-          </ModalHeader>
-          <ModalBody>
-            <Row className="g-4">
-              <TextFormInput name="title" label={t('post.title')} placeholder={t('post.eventName')} containerClassName="col-12" control={control} />
-              <TextAreaFormInput name="description" label={t('post.description')} rows={2} placeholder={t('post.descriptionPlaceholder')} containerClassName="col-12" control={control} />
-
-              <Col sm={4}>
-                <label className="form-label">{t('post.date')}</label>
-                <DateFormInput options={{
-                enableTime: false
-              }} type="text" className="form-control" placeholder={t('post.selectDate')} />
-              </Col>
-              <Col sm={4}>
-                <label className="form-label">{t('post.time')}</label>
-                <DateFormInput options={{
-                enableTime: true,
-                noCalendar: true
-              }} type="text" className="form-control" placeholder={t('post.selectTime')} />
-              </Col>
-              <TextFormInput name="duration" label={t('post.duration')} placeholder={t('post.durationPlaceholder')} containerClassName="col-sm-4" control={control} />
-              <TextFormInput name="location" label={t('post.location')} placeholder={t('post.locationPlaceholder')} containerClassName="col-12" control={control} />
-              <TextFormInput name="guest" type="email" label={t('post.addGuests')} placeholder={t('post.guestEmailPlaceholder')} containerClassName="col-12" control={control} />
-              <Col xs={12} className="mt-3">
-                <ul className="avatar-group list-unstyled align-items-center mb-0">
-                  {guests.map((avatar, idx) => <li className="avatar avatar-xs" key={idx}>
-                      <Image className="avatar-img rounded-circle" src={avatar} alt="avatar" />
-                    </li>)}
-                  <li className="ms-3">
-                    <small> +50 </small>
-                  </li>
-                </ul>
-              </Col>
-              <div className="mb-3">
-                <DropzoneFormInput showPreview helpText={t('post.attachmentHelpText')} icon={BsFileEarmarkText} label={t('post.uploadAttachment')} />
-              </div>
-            </Row>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="danger-soft" type="button" className="me-2" onClick={toggleEvent}>
-              {' '}
+          {selectedFiles.length > 0 && <FilePreview fileUrls={filePreviewUrls} onRemove={removeFile} />}
+        </ModalBody>
+        <ModalFooter className="border-0 pt-0">
+          <div className="d-flex w-100 gap-2">
+            <button
+              type="button"
+              className="btn btn-light flex-grow-1 py-2"
+              onClick={toggleVideoModel}
+            >
               {t('post.cancel')}
-            </Button>
-            <LoadingButton variant="success-soft" onClick={handlePostSubmit}>
-              {t('post.create')}
+            </button>
+            <LoadingButton
+              variant="info"
+              className="flex-grow-1 py-2"
+              onClick={handlePostSubmit}
+            >
+              {t('post.post')}
             </LoadingButton>
-          </ModalFooter>
-        </form>
-      </Modal>
+          </div>
+        </ModalFooter>
+      </div>
+    </Modal>
 
-      {/* feeling/activity */}
-      <Modal show={isOpenPost} onHide={togglePost} className="fade" centered id="modalCreateFeed" tabIndex={-1}>
+    {/* event */}
+    <Modal show={isOpenEvent} onHide={toggleEvent} centered className="fade" id="modalCreateEvents" tabIndex={-1} aria-labelledby="modalLabelCreateEvents" aria-hidden="true">
+      <form onSubmit={handleSubmit(() => { })}>
         <ModalHeader closeButton>
-          <h5 className="modal-title" id="modalLabelCreateFeed">
-            <BsPencilSquare className="text-primary me-2" />
-            {t('feed.createPost')}
+          <h5 className="modal-title" id="modalLabelCreateEvents">
+            <BsCalendar2EventFill className="text-danger me-2" />
+            {t('post.createEvent')}
           </h5>
         </ModalHeader>
         <ModalBody>
-          <div className="d-flex mb-3">
-            <div className="avatar avatar-xs me-2">
-              <img 
-                className="avatar-img rounded-circle" 
-                src={getImageUrl(getUserAvatar())} 
-                alt="" 
-                style={{ 
-                  width: '32px',
-                  height: '32px',
-                  objectFit: 'cover',
-                  transition: 'opacity 0.3s ease-in-out' 
-                }}
-                onError={(e) => {
-                  e.target.src = typeof avatar1 === 'string' ? avatar1 : avatar1.src || avatar1;
-                }}
-              />
+          <Row className="g-4">
+            <TextFormInput name="title" label={t('post.title')} placeholder={t('post.eventName')} containerClassName="col-12" control={control} />
+            <TextAreaFormInput name="description" label={t('post.description')} rows={2} placeholder={t('post.descriptionPlaceholder')} containerClassName="col-12" control={control} />
+
+            <Col sm={4}>
+              <label className="form-label">{t('post.date')}</label>
+              <DateFormInput options={{
+                enableTime: false
+              }} type="text" className="form-control" placeholder={t('post.selectDate')} />
+            </Col>
+            <Col sm={4}>
+              <label className="form-label">{t('post.time')}</label>
+              <DateFormInput options={{
+                enableTime: true,
+                noCalendar: true
+              }} type="text" className="form-control" placeholder={t('post.selectTime')} />
+            </Col>
+            <TextFormInput name="duration" label={t('post.duration')} placeholder={t('post.durationPlaceholder')} containerClassName="col-sm-4" control={control} />
+            <TextFormInput name="location" label={t('post.location')} placeholder={t('post.locationPlaceholder')} containerClassName="col-12" control={control} />
+            <TextFormInput name="guest" type="email" label={t('post.addGuests')} placeholder={t('post.guestEmailPlaceholder')} containerClassName="col-12" control={control} />
+            <Col xs={12} className="mt-3">
+              <ul className="avatar-group list-unstyled align-items-center mb-0">
+                {guests.map((avatar, idx) => <li className="avatar avatar-xs" key={idx}>
+                  <Image className="avatar-img rounded-circle" src={avatar} alt="avatar" />
+                </li>)}
+                <li className="ms-3">
+                  <small> +50 </small>
+                </li>
+              </ul>
+            </Col>
+            <div className="mb-3">
+              <DropzoneFormInput showPreview helpText={t('post.attachmentHelpText')} icon={BsFileEarmarkText} label={t('post.uploadAttachment')} />
             </div>
-            <form className="w-100">
-              <textarea 
-                className="form-control pe-4 fs-3 lh-1 border-0" 
-                rows={4} 
-                placeholder={t('feed.shareThoughts')} 
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-                style={{ resize: 'none' }}
-              />
-            </form>
-          </div>
-          <div className="hstack gap-2">
-            <OverlayTrigger overlay={<Tooltip>{t('post.photo')}</Tooltip>}>
-              <Link className="icon-md bg-success bg-opacity-10 text-success rounded-circle" href="">
-                {' '}
-                <BsImageFill />{' '}
-              </Link>
-            </OverlayTrigger>
-            <OverlayTrigger overlay={<Tooltip>{t('post.video')}</Tooltip>}>
-              <Link className="icon-md bg-info bg-opacity-10 text-info rounded-circle" href="">
-                {' '}
-                <BsCameraReelsFill />{' '}
-              </Link>
-            </OverlayTrigger>
-            <OverlayTrigger overlay={<Tooltip>{t('post.event')}</Tooltip>}>
-              <Link className="icon-md bg-danger bg-opacity-10 text-danger rounded-circle" href="">
-                {' '}
-                <BsCalendar2EventFill />{' '}
-              </Link>
-            </OverlayTrigger>
-            <OverlayTrigger overlay={<Tooltip>{t('post.feeling')}</Tooltip>}>
-              <Link className="icon-md bg-warning bg-opacity-10 text-warning rounded-circle" href="">
-                {' '}
-                <BsEmojiSmileFill />{' '}
-              </Link>
-            </OverlayTrigger>
-            <OverlayTrigger overlay={<Tooltip>Giriş yap</Tooltip>}>
-              <Link className="icon-md bg-light text-secondary rounded-circle" href="">
-                {' '}
-                <BsGeoAltFill />{' '}
-              </Link>
-            </OverlayTrigger>
-            <OverlayTrigger overlay={<Tooltip>Üstteki kişileri etiketleyin</Tooltip>}>
-              <Link className="icon-md bg-primary bg-opacity-10 text-primary rounded-circle" href="">
-                {' '}
-                <BsTagFill />{' '}
-              </Link>
-            </OverlayTrigger>
-          </div>
+          </Row>
         </ModalBody>
-        <ModalFooter className="row justify-content-between">
-          <Col lg={3}>
-            <select 
-              className="form-select" 
-              value={privacy}
-              onChange={(e) => setPrivacy(e.target.value)}
-            >
-              <option value="public">{t('post.privacyPublic')}</option>
-              <option value="friends">{t('post.privacyFriends')}</option>
-              <option value="private">{t('post.privacyPrivate')}</option>
-            </select>
-          </Col>
-          <Col lg={8} className="text-sm-end">
-            <Button variant="danger-soft" type="button" className="me-2" onClick={togglePost}>
-              {t('post.cancel')}
-            </Button>
-            <LoadingButton variant="success-soft" onClick={handlePostSubmit}>
-              {t('feed.share')}
-            </LoadingButton>
-          </Col>
+        <ModalFooter>
+          <Button variant="danger-soft" type="button" className="me-2" onClick={toggleEvent}>
+            {' '}
+            {t('post.cancel')}
+          </Button>
+          <LoadingButton variant="success-soft" onClick={handlePostSubmit}>
+            {t('post.create')}
+          </LoadingButton>
         </ModalFooter>
-      </Modal>
-    </>;
+      </form>
+    </Modal>
+
+    {/* feeling/activity */}
+    <Modal show={isOpenPost} onHide={togglePost} className="fade" centered id="modalCreateFeed" tabIndex={-1}>
+      <ModalHeader closeButton>
+        <h5 className="modal-title" id="modalLabelCreateFeed">
+          <BsPencilSquare className="text-primary me-2" />
+          {t('feed.createPost')}
+        </h5>
+      </ModalHeader>
+      <ModalBody>
+        <div className="d-flex mb-3">
+          <div className="avatar avatar-xs me-2">
+            <img
+              className="avatar-img rounded-circle"
+              src={getImageUrl(getUserAvatar())}
+              alt=""
+              style={{
+                width: '32px',
+                height: '32px',
+                objectFit: 'cover',
+                transition: 'opacity 0.3s ease-in-out'
+              }}
+              onError={(e) => {
+                e.target.src = typeof avatar1 === 'string' ? avatar1 : (avatar1?.src || '/images/avatar/default.jpg');
+              }}
+            />
+          </div>
+          <form className="w-100">
+            <textarea
+              className="form-control pe-4 fs-3 lh-1 border-0"
+              rows={4}
+              placeholder={t('feed.shareThoughts')}
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+              style={{ resize: 'none' }}
+            />
+          </form>
+        </div>
+        <div className="hstack gap-2">
+          <OverlayTrigger overlay={<Tooltip>{t('post.photo')}</Tooltip>}>
+            <Link className="icon-md bg-success bg-opacity-10 text-success rounded-circle" href="">
+              {' '}
+              <BsImageFill />{' '}
+            </Link>
+          </OverlayTrigger>
+          <OverlayTrigger overlay={<Tooltip>{t('post.video')}</Tooltip>}>
+            <Link className="icon-md bg-info bg-opacity-10 text-info rounded-circle" href="">
+              {' '}
+              <BsCameraReelsFill />{' '}
+            </Link>
+          </OverlayTrigger>
+          <OverlayTrigger overlay={<Tooltip>{t('post.event')}</Tooltip>}>
+            <Link className="icon-md bg-danger bg-opacity-10 text-danger rounded-circle" href="">
+              {' '}
+              <BsCalendar2EventFill />{' '}
+            </Link>
+          </OverlayTrigger>
+          <OverlayTrigger overlay={<Tooltip>{t('post.feeling')}</Tooltip>}>
+            <Link className="icon-md bg-warning bg-opacity-10 text-warning rounded-circle" href="">
+              {' '}
+              <BsEmojiSmileFill />{' '}
+            </Link>
+          </OverlayTrigger>
+          <OverlayTrigger overlay={<Tooltip>Giriş yap</Tooltip>}>
+            <Link className="icon-md bg-light text-secondary rounded-circle" href="">
+              {' '}
+              <BsGeoAltFill />{' '}
+            </Link>
+          </OverlayTrigger>
+          <OverlayTrigger overlay={<Tooltip>Üstteki kişileri etiketleyin</Tooltip>}>
+            <Link className="icon-md bg-primary bg-opacity-10 text-primary rounded-circle" href="">
+              {' '}
+              <BsTagFill />{' '}
+            </Link>
+          </OverlayTrigger>
+        </div>
+      </ModalBody>
+      <ModalFooter className="row justify-content-between">
+        <Col lg={3}>
+          <select
+            className="form-select"
+            value={privacy}
+            onChange={(e) => setPrivacy(e.target.value)}
+          >
+            <option value="public">{t('post.privacyPublic')}</option>
+            <option value="friends">{t('post.privacyFriends')}</option>
+            <option value="private">{t('post.privacyPrivate')}</option>
+          </select>
+        </Col>
+        <Col lg={8} className="text-sm-end">
+          <Button variant="danger-soft" type="button" className="me-2" onClick={togglePost}>
+            {t('post.cancel')}
+          </Button>
+          <LoadingButton variant="success-soft" onClick={handlePostSubmit}>
+            {t('feed.share')}
+          </LoadingButton>
+        </Col>
+      </ModalFooter>
+    </Modal>
+  </>;
 };
 export default CreatePostCard;

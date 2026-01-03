@@ -1,4 +1,4 @@
-import Image from 'next/image';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button, Card, CardBody, CardFooter, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'react-bootstrap';
@@ -136,25 +136,25 @@ const ProfilePanel = ({ links }) => {
   }, [session?.user?.id]);
 
   const getImageUrl = (photoUrl, bustCache = false) => {
-    
+
     // If photoUrl is null, undefined, or empty, return default avatar
     if (!photoUrl || photoUrl === 'null' || photoUrl === 'undefined' || photoUrl === '') {
-      return typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
+      return typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
     }
-    
-    // If photoUrl is an object (imported image), return it directly
+
+    // If photoUrl is an object (imported image), return its src property
     if (typeof photoUrl === 'object' && photoUrl.src) {
-      return photoUrl;
+      return photoUrl.src;
     }
-    
+
     // If photoUrl is not a string, return default avatar
     if (typeof photoUrl !== 'string') {
-      return typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
+      return typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
     }
-    
+
     // Trim whitespace
     photoUrl = photoUrl.trim();
-    
+
     // If it starts with /uploads/, add API base URL
     if (photoUrl.startsWith('/uploads/')) {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -164,7 +164,7 @@ const ProfilePanel = ({ links }) => {
       const finalUrl = bustCache ? `${url}?t=${Date.now()}` : url;
       return finalUrl;
     }
-    
+
     // If it starts with uploads/ (without leading slash), add API base URL and leading slash
     if (photoUrl.startsWith('uploads/')) {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -173,7 +173,7 @@ const ProfilePanel = ({ links }) => {
       const finalUrl = bustCache ? `${url}?t=${Date.now()}` : url;
       return finalUrl;
     }
-    
+
     // If it's already a full URL, add cache busting if needed
     if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
       if (bustCache) {
@@ -182,7 +182,7 @@ const ProfilePanel = ({ links }) => {
       }
       return photoUrl;
     }
-    
+
     // For any other case, try to construct URL with API base URL
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
     const cleanApiBaseUrl = apiBaseUrl.replace(/\/$/, '');
@@ -344,7 +344,7 @@ const ProfilePanel = ({ links }) => {
                   onError={(e) => {
                     console.error('❌ ProfilePanel: Image failed to load:', e.target.src);
                     console.error('❌ ProfilePanel: Error event:', e);
-                    e.target.src = typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7;
+                    e.target.src = typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
                     setImageLoading(false);
                   }}
                 />
@@ -488,7 +488,7 @@ const ProfilePanel = ({ links }) => {
                     }
                   }}
                 >
-                  <Image
+                  <img
                     src={item.image}
                     alt="icon"
                     height={18}
@@ -548,8 +548,8 @@ const ProfilePanel = ({ links }) => {
                 alt="Profile"
                 className="rounded-3 w-100"
                 style={{ maxHeight: '500px', objectFit: 'contain', width: '100%' }}
-                onError={(e) => { 
-                  e.target.src = typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7; 
+                onError={(e) => {
+                  e.target.src = typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
                 }}
               />
             </div>
@@ -602,8 +602,8 @@ const ProfilePanel = ({ links }) => {
                 width={120}
                 height={120}
                 style={{ objectFit: 'cover' }}
-                onError={(e) => { 
-                  e.target.src = typeof avatar7 === 'string' ? avatar7 : avatar7.src || avatar7; 
+                onError={(e) => {
+                  e.target.src = typeof avatar7 === 'string' ? avatar7 : (avatar7?.src || '/images/avatar/default.jpg');
                 }}
               />
             </div>
