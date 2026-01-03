@@ -343,6 +343,8 @@ const Feeds = ({ userId }) => {
       if (response.ok) {
         // Immediately remove the post from local state for instant UI update
         removePost(postId);
+        // Also remove from pending posts if it exists there
+        setPendingPosts(prev => prev.filter(p => p.id !== postId));
       } else {
         console.error('Failed to delete shared profile post:', response.status);
       }
@@ -377,6 +379,8 @@ const Feeds = ({ userId }) => {
       if (response.ok) {
         // Immediately remove the post from local state for instant UI update
         removePost(postId);
+        // Also remove from pending posts if it exists there
+        setPendingPosts(prev => prev.filter(p => p.id !== postId));
       } else {
         console.error('Failed to delete shared book post:', response.status);
       }
@@ -411,6 +415,8 @@ const Feeds = ({ userId }) => {
       if (response.ok) {
         // Immediately remove the post from local state for instant UI update
         removePost(postId);
+        // Also remove from pending posts if it exists there
+        setPendingPosts(prev => prev.filter(p => p.id !== postId));
       } else {
         console.error('Failed to delete shared article post:', response.status);
       }
@@ -454,7 +460,11 @@ const Feeds = ({ userId }) => {
       if (response.ok) {
         // Close the modal first
         setShowDeleteConfirm(false);
-        // Refresh timeline to remove deleted post
+        // Immediately remove the post from local state for instant UI update
+        removePost(postId);
+        // Also remove from pending posts if it exists there
+        setPendingPosts(prev => prev.filter(p => p.id !== postId));
+        // Refresh timeline to sync with server
         refetch();
       } else {
         // console.error('Failed to delete post:', response.status, response.statusText);
