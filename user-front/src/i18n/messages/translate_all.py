@@ -49,10 +49,10 @@ def map_language_code(lang_code):
         'he': None,  # Hebrew - DeepL desteklemiyor (ücretsiz API'de)
         'fa': None,  # Persian - DeepL desteklemiyor
         'ur': None,  # Urdu - DeepL desteklemiyor
-        'ku': 'EN',  # Kurdish -> English
-        'hy': 'EN',  # Armenian -> English
+        'ku': 'EN',  # Kurdish -> English (fallback, ama kaynak EN olduğu için atlanacak)
+        'hy': 'EN',  # Armenian -> English (fallback, ama kaynak EN olduğu için atlanacak)
         'mk': 'BG',  # Macedonian -> Bulgarian (yakın)
-        'sr': 'HR',  # Serbian -> Croatian (yakın)
+        'sr': None,  # Serbian -> HR desteklenmiyor, çeviri yapılamaz
         'mt': 'IT',  # Maltese -> Italian (yakın)
     }
     
@@ -73,6 +73,10 @@ def translate_text(text, target_lang, source_lang='EN', retries=5):
     # Desteklenmeyen dil kontrolü
     if target_lang_mapped is None:
         print(f"       ⚠️  {target_lang} dili DeepL tarafından desteklenmiyor, çeviri yapılamıyor")
+        return text
+    
+    # Kaynak ve hedef dil aynıysa çeviri yapma
+    if target_lang_mapped == source_lang:
         return text
     
     for attempt in range(retries):
@@ -121,6 +125,10 @@ def translate_text(text, target_lang, source_lang='EN', retries=5):
                     else:
                         print(f"    ⚠️  Rate limit hatası, çeviri yapılamadı")
                         return text
+                elif response.status == 400:
+                    # HTTP 400 = Dil desteklenmiyor
+                    print(f"    ⚠️  HTTP 400 hatası: {response_body[:200]}")
+                    return None  # None döndür, test başarısız olduğunu gösterir
                 else:
                     print(f"    ⚠️  HTTP {response.status} hatası: {response_body[:200]}")
                     if attempt < retries - 1:
@@ -141,6 +149,11 @@ def translate_text(text, target_lang, source_lang='EN', retries=5):
                 else:
                     print(f"    ⚠️  Rate limit hatası, çeviri yapılamadı")
                     return text
+            elif e.code == 400:
+                # HTTP 400 = Dil desteklenmiyor
+                print(f"    ⚠️  HTTP 400 hatası: {error_body[:200]}")
+                # Özel bir değer döndür ki test başarısız olduğunu anlayabilelim
+                return None  # None döndür, test başarısız olduğunu gösterir
             else:
                 print(f"    ⚠️  HTTP {e.code} hatası: {error_body[:200]}")
             if attempt < retries - 1:
@@ -170,13 +183,19 @@ def translate_file_section(data, target_lang, section_name, translated_count=[0]
                 # Her çeviride anında göster
                 print(f"    ✓ [{translated_count[0]}] {current_path}: {value[:50]}{'...' if len(value) > 50 else ''}")
                 translated_value = translate_text(value, target_lang)
+                # None kontrolü (HTTP 400 hatası durumunda)
+                if translated_value is None:
+                    translated_value = value  # Orijinal metni koru
+                    fail_count[0] += 1
+                    print(f"       ⚠️  Çeviri yapılamadı (dil desteklenmiyor)")
                 translated[key] = translated_value
                 # Çeviri sonucunu göster
                 if translated_value != value:
                     success_count[0] += 1
                     print(f"       → {translated_value[:50]}{'...' if len(translated_value) > 50 else ''}")
                 else:
-                    fail_count[0] += 1
+                    if translated_value is not None:  # None değilse say
+                        fail_count[0] += 1
                     print(f"       ⚠️  Çeviri yapılamadı (aynı değer döndü)")
                 
                 # Her 10 çeviride bir özet
@@ -193,7 +212,12 @@ def translate_file_section(data, target_lang, section_name, translated_count=[0]
         current_path = section_name if section_name else "root"
         print(f"    ✓ [{translated_count[0]}] {current_path}: {data[:50]}{'...' if len(data) > 50 else ''}")
         translated_value = translate_text(data, target_lang)
-        if translated_value != data:
+        # None kontrolü (HTTP 400 hatası durumunda)
+        if translated_value is None:
+            translated_value = data  # Orijinal metni koru
+            fail_count[0] += 1
+            print(f"       ⚠️  Çeviri yapılamadı (dil desteklenmiyor)")
+        elif translated_value != data:
             success_count[0] += 1
             print(f"       → {translated_value[:50]}{'...' if len(translated_value) > 50 else ''}")
         else:
@@ -231,15 +255,13 @@ def main():
 
     welcome_en = en_data.get('common', {}).get('welcome', 'Welcome')
 
-    # Yeni eklenen dosyalar
+    # DeepL tarafından desteklenen diller (desteklenmeyenler kaldırıldı)
     new_files = {
-        'zh.json': 'zh', 'hi.json': 'hi', 'es.json': 'es', 'pt.json': 'pt',
+        'zh.json': 'zh', 'es.json': 'es', 'pt.json': 'pt',
         'ru.json': 'ru', 'it.json': 'it', 'ko.json': 'ko', 'uk.json': 'uk',
-        'ku.json': 'ku', 'ro.json': 'ro', 'bg.json': 'bg', 'sr.json': 'sr',
+        'ro.json': 'ro', 'bg.json': 'bg',
         'hu.json': 'hu', 'cs.json': 'cs', 'pl.json': 'pl', 'sk.json': 'sk',
-        'sl.json': 'sl', 'mk.json': 'mk', 'hy.json': 'hy', 'mr.json': 'mr',
-        'te.json': 'te', 'gu.json': 'gu', 'ml.json': 'ml', 'kn.json': 'kn',
-        'or.json': 'or'
+        'sl.json': 'sl', 'mk.json': 'mk'  # mk fallback BG kullanıyor
     }
 
     total_files = len(new_files)
@@ -261,6 +283,12 @@ def main():
             if target_lang_mapped is None:
                 print(f"  ⚠️  {lang_code} dili DeepL tarafından desteklenmiyor!")
                 print(f"  ⏭️  {filename} atlanıyor (desteklenmeyen dil)")
+                continue
+            elif target_lang_mapped == 'EN':
+                # Fallback İngilizce ise ve kaynak zaten İngilizce, çeviri yapılamaz
+                print(f"  ⚠️  {lang_code} → {target_lang_mapped} (fallback İngilizce)")
+                print(f"  ⚠️  Kaynak zaten İngilizce olduğu için anlamlı çeviri yapılamaz!")
+                print(f"  ⏭️  {filename} atlanıyor (fallback kaynak dili ile aynı)")
                 continue
             else:
                 print(f"  ⚠️  {lang_code} → {target_lang_mapped} (fallback kullanılıyor)")
@@ -290,7 +318,12 @@ def main():
             print(f"  🔍 Dil kodu: {lang_code} → {target_lang_mapped}")
             print(f"  🧪 Test çevirisi yapılıyor: 'Hello' → {target_lang_mapped}...")
             test_result = translate_text("Hello", lang_code)
-            if test_result != "Hello":
+            if test_result is None:
+                # HTTP 400 hatası = Dil desteklenmiyor
+                print(f"  ❌ Test başarısız: {target_lang_mapped} dili DeepL tarafından desteklenmiyor!")
+                print(f"  ⏭️  {filename} atlanıyor (desteklenmeyen dil kodu)")
+                continue
+            elif test_result != "Hello":
                 print(f"  ✅ Test başarılı: 'Hello' → '{test_result}'")
             else:
                 print(f"  ⚠️  Test başarısız: Çeviri yapılamadı!")
